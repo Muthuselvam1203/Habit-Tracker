@@ -1,10 +1,19 @@
 const PREFIX = 'streakly_';
 
+const normalizeKey = (key) => {
+  if (key.startsWith(PREFIX)) return key;
+  return `${PREFIX}${key}`;
+};
+
 export const storage = {
   get: (key, defaultValue = null) => {
     try {
-      const item = localStorage.getItem(`${PREFIX}${key}`);
-      return item ? JSON.parse(item) : defaultValue;
+      const fullKey = normalizeKey(key);
+      const item = localStorage.getItem(fullKey);
+      if (item === null || item === undefined || item === 'undefined') {
+        return defaultValue;
+      }
+      return JSON.parse(item);
     } catch (e) {
       console.error(`Error reading ${key} from storage:`, e);
       return defaultValue;
@@ -13,7 +22,8 @@ export const storage = {
 
   set: (key, value) => {
     try {
-      localStorage.setItem(`${PREFIX}${key}`, JSON.stringify(value));
+      const fullKey = normalizeKey(key);
+      localStorage.setItem(fullKey, JSON.stringify(value));
       return true;
     } catch (e) {
       console.error(`Error saving ${key} to storage:`, e);
@@ -23,7 +33,8 @@ export const storage = {
 
   remove: (key) => {
     try {
-      localStorage.removeItem(`${PREFIX}${key}`);
+      const fullKey = normalizeKey(key);
+      localStorage.removeItem(fullKey);
       return true;
     } catch (e) {
       console.error(`Error removing ${key} from storage:`, e);
@@ -38,7 +49,11 @@ export const storage = {
         const fullKey = localStorage.key(i);
         if (fullKey && fullKey.startsWith(PREFIX)) {
           const rawKey = fullKey.replace(PREFIX, '');
-          backup[rawKey] = JSON.parse(localStorage.getItem(fullKey) || 'null');
+          try {
+            backup[rawKey] = JSON.parse(localStorage.getItem(fullKey) || 'null');
+          } catch (err) {
+            backup[rawKey] = localStorage.getItem(fullKey);
+          }
         }
       }
       return JSON.stringify(backup, null, 2);

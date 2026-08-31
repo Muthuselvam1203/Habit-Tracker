@@ -118,6 +118,51 @@ const DEMO_HABITS = [
   }
 ];
 
+const DEFAULT_TASKS = [
+  {
+    id: 'task-1',
+    title: 'Review weekly life goals & active habits',
+    category: 'Productivity',
+    priority: 'high',
+    dueDate: formatDateKey(new Date()),
+    completed: false,
+    notes: 'Keep habit streaks aligned with quarterly milestones.'
+  },
+  {
+    id: 'task-2',
+    title: '50-minute deep work focus block',
+    category: 'Focus',
+    priority: 'high',
+    dueDate: formatDateKey(new Date()),
+    completed: true,
+    notes: 'Ship key module architecture without distractions.'
+  },
+  {
+    id: 'task-3',
+    title: 'Read 1 chapter of high-impact book',
+    category: 'Learning',
+    priority: 'medium',
+    dueDate: formatDateKey(new Date()),
+    completed: true,
+    notes: 'Reflect on key takeaways in Streakly journal.'
+  },
+  {
+    id: 'task-4',
+    title: 'Plan restorative outdoor walk & hydration',
+    category: 'Health',
+    priority: 'low',
+    dueDate: formatDateKey(new Date()),
+    completed: false,
+    notes: 'Hit 2.5L water intake and get fresh oxygen.'
+  }
+];
+
+const DEFAULT_FOCUS_SESSIONS = [
+  { id: 'f-1', date: formatDateKey(new Date()), durationMinutes: 50, category: 'Coding & Architecture', completed: true },
+  { id: 'f-2', date: formatDateKey(new Date()), durationMinutes: 25, category: 'Reading & Notes', completed: true },
+  { id: 'f-3', date: formatDateKey(new Date(Date.now() - 86400000)), durationMinutes: 90, category: 'Deep Work', completed: true }
+];
+
 const generateDemoCompletions = () => {
   const completions = {
     'habit-1': {},
@@ -131,24 +176,13 @@ const generateDemoCompletions = () => {
   const past20 = getPastDays(20);
   
   past20.forEach((day, index) => {
-    // Habit 1: 14-day streak
     if (index >= 6) completions['habit-1'][day.dateKey] = { completedAt: day.dateKey, timerLoggedMinutes: 15 };
-    
-    // Habit 2: 12-day streak
     if (index >= 8) completions['habit-2'][day.dateKey] = { completedAt: day.dateKey };
-    
-    // Habit 3: Mon-Fri
     if (['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].includes(day.dayName) && index >= 5) {
       completions['habit-3'][day.dateKey] = { completedAt: day.dateKey, timerLoggedMinutes: 90 };
     }
-    
-    // Habit 4: 18-day streak
     if (index >= 2) completions['habit-4'][day.dateKey] = { completedAt: day.dateKey, measurableValue: 20 };
-    
-    // Habit 5: 20-day streak
     completions['habit-5'][day.dateKey] = { completedAt: day.dateKey };
-    
-    // Habit 6: 11-day streak
     if (index >= 9) completions['habit-6'][day.dateKey] = { completedAt: day.dateKey };
   });
 
@@ -182,15 +216,16 @@ const generateDemoWellness = () => {
       journal: {
         wentWell: 'Completed deep work session early in the morning.',
         learned: 'Small consistent habits compound faster than sporadic bursts.',
-        improveTomorrow: 'Start night wind-down 15 minutes earlier.',
-        gratitude: 'Grateful for good health, focus, and continuous growth.'
+        difficult: 'Resisted afternoon distraction impulses.',
+        gratitude: 'Grateful for good health, focus, and continuous growth.',
+        improveTomorrow: 'Start night wind-down 15 minutes earlier.'
       }
     };
   });
 
   // Current day default
   wellness[todayKey] = {
-    waterMl: 1500,
+    waterMl: 1750,
     waterTargetMl: 2000,
     sleep: {
       bedtime: '23:00',
@@ -210,8 +245,9 @@ const generateDemoWellness = () => {
     journal: {
       wentWell: 'Maintained strong morning momentum and finished core coding milestones.',
       learned: 'Time-blocking prevents cognitive friction throughout the afternoon.',
-      improveTomorrow: 'Drink first 500ml water immediately upon waking.',
-      gratitude: 'Deeply thankful for clear purpose and relentless energy.'
+      difficult: 'Balancing focus sprints with restorative breaks.',
+      gratitude: 'Deeply thankful for clear purpose, supportive mentors, and relentless energy.',
+      improveTomorrow: 'Drink first 500ml water immediately upon waking.'
     }
   };
 
@@ -229,16 +265,19 @@ const generateDemoRoutines = () => {
 };
 
 export const useHabits = () => {
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
   const [habits, setHabits] = useLocalStorage('habits', DEMO_HABITS);
+  const [tasks, setTasks] = useLocalStorage('tasks', DEFAULT_TASKS);
+  const [focusSessions, setFocusSessions] = useLocalStorage('focus_sessions', DEFAULT_FOCUS_SESSIONS);
   const [completions, setCompletions] = useLocalStorage('completions', generateDemoCompletions);
-  const [morningRoutine, setMorningRoutine] = useLocalStorage('streakly_morning_routine', DEFAULT_MORNING_ROUTINE);
-  const [nightRoutine, setNightRoutine] = useLocalStorage('streakly_night_routine', DEFAULT_NIGHT_ROUTINE);
-  const [routineLogs, setRoutineLogs] = useLocalStorage('streakly_routine_logs', generateDemoRoutines);
-  const [wellnessLogs, setWellnessLogs] = useLocalStorage('streakly_wellness_logs', generateDemoWellness);
-  const [badHabits, setBadHabits] = useLocalStorage('streakly_bad_habits', DEFAULT_BAD_HABITS);
-  const [goals, setGoals] = useLocalStorage('streakly_goals', DEFAULT_GOALS);
-  const [userXp, setUserXp] = useLocalStorage('streakly_user_xp', 2850);
-  const [streakFreezes, setStreakFreezes] = useLocalStorage('streakly_streak_freezes', 2);
+  const [morningRoutine, setMorningRoutine] = useLocalStorage('morning_routine', DEFAULT_MORNING_ROUTINE);
+  const [nightRoutine, setNightRoutine] = useLocalStorage('night_routine', DEFAULT_NIGHT_ROUTINE);
+  const [routineLogs, setRoutineLogs] = useLocalStorage('routine_logs', generateDemoRoutines);
+  const [wellnessLogs, setWellnessLogs] = useLocalStorage('wellness_logs', generateDemoWellness);
+  const [badHabits, setBadHabits] = useLocalStorage('bad_habits', DEFAULT_BAD_HABITS);
+  const [goals, setGoals] = useLocalStorage('goals', DEFAULT_GOALS);
+  const [userXp, setUserXp] = useLocalStorage('user_xp', 3150);
+  const [streakFreezes, setStreakFreezes] = useLocalStorage('streak_freezes', 2);
   const [unlockedAchievements, setUnlockedAchievements] = useLocalStorage('unlocked_achievements', [
     'first-step',
     'streak-3',
@@ -257,11 +296,21 @@ export const useHabits = () => {
   const [activeMilestone, setActiveMilestone] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
 
+  // Sync theme attribute to document
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  }, [setTheme]);
+
   const awardXp = useCallback((amount, reason = 'Activity completed') => {
-    setUserXp(prev => {
-      const next = (prev || 0) + amount;
-      return next;
-    });
+    setUserXp(prev => (prev || 0) + amount);
   }, [setUserXp]);
 
   // Evaluate achievements
@@ -287,7 +336,7 @@ export const useHabits = () => {
     }
   }, [habits, completions, unlockedAchievements, setUnlockedAchievements, awardXp]);
 
-  // Add a new habit
+  // Habit CRUD
   const addHabit = useCallback((habitData) => {
     const newHabit = {
       id: `habit-${Date.now()}`,
@@ -316,13 +365,11 @@ export const useHabits = () => {
     return newHabit;
   }, [setHabits, awardXp]);
 
-  // Update existing habit
   const updateHabit = useCallback((id, updatedData) => {
     setHabits(prev => prev.map(h => h.id === id ? { ...h, ...updatedData } : h));
-    createNotification('Habit Updated', 'Changes to your habit were saved.');
+    createNotification('Habit Updated', 'Changes saved.');
   }, [setHabits]);
 
-  // Delete habit
   const deleteHabit = useCallback((id) => {
     setHabits(prev => prev.filter(h => h.id !== id));
     setCompletions(prev => {
@@ -330,15 +377,13 @@ export const useHabits = () => {
       delete next[id];
       return next;
     });
-    createNotification('Habit Deleted', 'Habit and logs were removed.');
+    createNotification('Habit Deleted', 'Habit removed.');
   }, [setHabits, setCompletions]);
 
-  // Archive habit
   const toggleArchiveHabit = useCallback((id) => {
     setHabits(prev => prev.map(h => h.id === id ? { ...h, archived: !h.archived } : h));
   }, [setHabits]);
 
-  // Toggle habit completion on a specific date
   const toggleHabitCompletion = useCallback((habitId, dateKey = formatDateKey(new Date()), extraData = {}) => {
     let wasCompleted = false;
     let habitName = '';
@@ -372,8 +417,8 @@ export const useHabits = () => {
 
       try {
         confetti({
-          particleCount: 40,
-          spread: 55,
+          particleCount: 35,
+          spread: 50,
           origin: { y: 0.8 },
           colors: ['#2563EB', '#10B981', '#8B5CF6', '#F59E0B']
         });
@@ -393,13 +438,13 @@ export const useHabits = () => {
           });
           createNotification('Streak Milestone!', `You hit a ${currentStreak}-day streak on "${habit.name}"! 🔥`, 'milestone');
         } else {
-          createNotification('Habit Completed', `"${habitName}" marked as done (+${xpGain} XP).`, 'completion');
+          createNotification('Habit Completed', `"${habitName}" completed (+${xpGain} XP).`, 'completion');
         }
       }
 
       setToastMessage({
         title: 'Habit Completed',
-        message: `"${habitName}" completed! (+XP)`,
+        message: `"${habitName}" marked as done! (+XP)`,
         undoAction: () => {
           setCompletions(prev => {
             const nextLogs = { ...(prev[habitId] || {}) };
@@ -418,7 +463,7 @@ export const useHabits = () => {
     return wasCompleted;
   }, [habits, completions, setCompletions, awardXp]);
 
-  // Routine Step Toggle (Morning / Night)
+  // Routine Step Toggle
   const toggleRoutineStep = useCallback((type, stepId, dateKey = formatDateKey(new Date())) => {
     setRoutineLogs(prev => {
       const dayLogs = { ...(prev[dateKey] || { morningCompletedIds: [], nightCompletedIds: [] }) };
@@ -426,14 +471,11 @@ export const useHabits = () => {
       const list = dayLogs[key] || [];
 
       let updatedList;
-      let isDone;
       if (list.includes(stepId)) {
         updatedList = list.filter(id => id !== stepId);
-        isDone = false;
       } else {
         updatedList = [...list, stepId];
-        isDone = true;
-        awardXp(15, `${type} routine step completed`);
+        awardXp(15, `${type} routine step`);
       }
 
       return {
@@ -446,7 +488,55 @@ export const useHabits = () => {
     });
   }, [setRoutineLogs, awardXp]);
 
-  // Wellness Logging (Water, Sleep, Mood, Energy, Screen Time, Journal)
+  // Tasks CRUD
+  const addTask = useCallback((taskData) => {
+    const newTask = {
+      id: `task-${Date.now()}`,
+      title: taskData.title.trim(),
+      category: taskData.category || 'Productivity',
+      priority: taskData.priority || 'medium', // 'high' | 'medium' | 'low'
+      dueDate: taskData.dueDate || formatDateKey(new Date()),
+      completed: false,
+      notes: taskData.notes || '',
+      createdAt: new Date().toISOString()
+    };
+    setTasks(prev => [newTask, ...prev]);
+    awardXp(15, 'Task created');
+    createNotification('Task Added', `"${newTask.title}" added to tasks list.`);
+    return newTask;
+  }, [setTasks, awardXp]);
+
+  const updateTask = useCallback((id, updatedData) => {
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updatedData } : t));
+  }, [setTasks]);
+
+  const deleteTask = useCallback((id) => {
+    setTasks(prev => prev.filter(t => t.id !== id));
+    createNotification('Task Removed', 'Task deleted.');
+  }, [setTasks]);
+
+  const toggleTaskCompletion = useCallback((id) => {
+    let isDone = false;
+    let taskTitle = '';
+    setTasks(prev => prev.map(t => {
+      if (t.id === id) {
+        isDone = !t.completed;
+        taskTitle = t.title;
+        return { ...t, completed: isDone };
+      }
+      return t;
+    }));
+
+    if (isDone) {
+      awardXp(20, `Task completed: ${taskTitle}`);
+      setToastMessage({
+        title: 'Task Done',
+        message: `"${taskTitle}" completed! (+20 XP)`
+      });
+    }
+  }, [setTasks, awardXp]);
+
+  // Wellness Logging
   const updateDailyWellness = useCallback((updatePayload, dateKey = formatDateKey(new Date())) => {
     setWellnessLogs(prev => {
       const dayData = { ...(prev[dateKey] || {}) };
@@ -465,7 +555,6 @@ export const useHabits = () => {
     awardXp(10, 'Wellness logged');
   }, [setWellnessLogs, awardXp]);
 
-  // Quick Water Increment
   const addWater = useCallback((mlToAdd, dateKey = formatDateKey(new Date())) => {
     setWellnessLogs(prev => {
       const dayData = prev[dateKey] || { waterMl: 0, waterTargetMl: 2000 };
@@ -496,7 +585,7 @@ export const useHabits = () => {
     };
     setGoals(prev => [newGoal, ...prev]);
     awardXp(50, 'New Goal Set');
-    createNotification('Goal Created', `"${newGoal.title}" was established! 🎯`);
+    createNotification('Goal Created', `"${newGoal.title}" established! 🎯`);
     return newGoal;
   }, [setGoals, awardXp]);
 
@@ -514,7 +603,7 @@ export const useHabits = () => {
       ...bh,
       cleanSince: new Date().toISOString()
     } : bh));
-    createNotification('Relapse Logged', 'Clean streak reset. Fresh start begins today!');
+    createNotification('Relapse Logged', 'Clean streak reset. Fresh start today!');
   }, [setBadHabits]);
 
   const addBadHabit = useCallback((data) => {
@@ -555,21 +644,35 @@ export const useHabits = () => {
   }, [streakFreezes, setStreakFreezes]);
 
   // Focus Session Log
-  const logFocusSession = useCallback((minutes, habitId = null) => {
+  const logFocusSession = useCallback((minutes, habitId = null, category = 'Deep Work') => {
     if (habitId) {
       toggleHabitCompletion(habitId, formatDateKey(new Date()), {
         forceComplete: true,
         timerMinutes: minutes
       });
     }
+
+    const newSession = {
+      id: `focus-${Date.now()}`,
+      date: formatDateKey(new Date()),
+      durationMinutes: minutes,
+      habitId,
+      category,
+      completed: true,
+      completedAt: new Date().toISOString()
+    };
+
+    setFocusSessions(prev => [newSession, ...(prev || [])]);
     const xp = Math.round(minutes * 1.5);
     awardXp(xp, `Focus session (${minutes}m)`);
     createNotification('Focus Session Complete!', `Logged ${minutes} minutes of deep focus (+${xp} XP) ⏱️`);
-  }, [toggleHabitCompletion, awardXp]);
+  }, [toggleHabitCompletion, awardXp, setFocusSessions]);
 
   // Reset to full demo data
   const seedDemoData = useCallback(() => {
     setHabits(DEMO_HABITS);
+    setTasks(DEFAULT_TASKS);
+    setFocusSessions(DEFAULT_FOCUS_SESSIONS);
     setCompletions(generateDemoCompletions());
     setMorningRoutine(DEFAULT_MORNING_ROUTINE);
     setNightRoutine(DEFAULT_NIGHT_ROUTINE);
@@ -577,7 +680,7 @@ export const useHabits = () => {
     setWellnessLogs(generateDemoWellness());
     setBadHabits(DEFAULT_BAD_HABITS);
     setGoals(DEFAULT_GOALS);
-    setUserXp(3200);
+    setUserXp(3500);
     setStreakFreezes(2);
     setUnlockedAchievements([
       'first-step',
@@ -591,9 +694,11 @@ export const useHabits = () => {
       'focus-master',
       'life-optimizer'
     ]);
-    createNotification('Streakly 2.0 Ready', 'Loaded full Life OS profile for Muthuselvam.');
+    createNotification('Streakly Ready', 'Loaded full Life OS profile.');
   }, [
     setHabits,
+    setTasks,
+    setFocusSessions,
     setCompletions,
     setMorningRoutine,
     setNightRoutine,
@@ -609,6 +714,8 @@ export const useHabits = () => {
   // Clear all data
   const clearHabits = useCallback(() => {
     setHabits([]);
+    setTasks([]);
+    setFocusSessions([]);
     setCompletions({});
     setRoutineLogs({});
     setWellnessLogs({});
@@ -620,6 +727,8 @@ export const useHabits = () => {
     createNotification('Data Cleared', 'All personal records wiped.');
   }, [
     setHabits,
+    setTasks,
+    setFocusSessions,
     setCompletions,
     setRoutineLogs,
     setWellnessLogs,
@@ -651,7 +760,11 @@ export const useHabits = () => {
   });
 
   return {
+    theme,
+    toggleTheme,
     habits,
+    tasks,
+    focusSessions,
     completions,
     stats,
     morningRoutine,
@@ -677,6 +790,10 @@ export const useHabits = () => {
     toggleArchiveHabit,
     toggleHabitCompletion,
     toggleRoutineStep,
+    addTask,
+    updateTask,
+    deleteTask,
+    toggleTaskCompletion,
     setMorningRoutine,
     setNightRoutine,
     updateDailyWellness,

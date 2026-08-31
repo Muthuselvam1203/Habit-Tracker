@@ -13,6 +13,7 @@ import { useOnboarding } from './hooks/useOnboarding';
 import { useNotifications } from './hooks/useNotifications';
 import { AppLayout } from './components/layout/AppLayout';
 import { HabitModal } from './components/habits/HabitModal';
+import { FocusModal } from './components/focus/FocusModal';
 import { Toast } from './components/common/Toast';
 import { ConfirmDialog } from './components/common/ConfirmDialog';
 import { MilestoneModal } from './components/common/MilestoneModal';
@@ -21,10 +22,13 @@ import { MilestoneModal } from './components/common/MilestoneModal';
 import { Login } from './pages/Login';
 import { Onboarding } from './pages/Onboarding';
 import { Dashboard } from './pages/Dashboard';
+import { MyDay } from './pages/MyDay';
 import { Habits } from './pages/Habits';
 import { HabitDetails } from './pages/HabitDetails';
 import { Routines } from './pages/Routines';
 import { Goals } from './pages/Goals';
+import { Tasks } from './pages/Tasks';
+import { Focus } from './pages/Focus';
 import { Wellness } from './pages/Wellness';
 import { DailyJournal } from './pages/DailyJournal';
 import { Calendar } from './pages/Calendar';
@@ -71,9 +75,14 @@ const AppContent = () => {
   const [isHabitModalOpen, setIsHabitModalOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState(null);
   const [habitToDelete, setHabitToDelete] = useState(null);
+  const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
 
   const {
+    theme,
+    toggleTheme,
     habits,
+    tasks,
+    focusSessions,
     completions,
     stats,
     morningRoutine,
@@ -99,6 +108,10 @@ const AppContent = () => {
     toggleArchiveHabit,
     toggleHabitCompletion,
     toggleRoutineStep,
+    addTask,
+    updateTask,
+    deleteTask,
+    toggleTaskCompletion,
     setMorningRoutine,
     setNightRoutine,
     updateDailyWellness,
@@ -178,9 +191,12 @@ const AppContent = () => {
   // Determine current active navigation path from location.pathname
   const getCurrentNavPath = () => {
     const p = location.pathname;
+    if (p.startsWith('/my-day')) return 'my-day';
     if (p.startsWith('/habits')) return 'habits';
     if (p.startsWith('/routines')) return 'routines';
     if (p.startsWith('/goals')) return 'goals';
+    if (p.startsWith('/tasks')) return 'tasks';
+    if (p.startsWith('/focus')) return 'focus';
     if (p.startsWith('/wellness')) return 'wellness';
     if (p.startsWith('/journal')) return 'journal';
     if (p.startsWith('/calendar')) return 'calendar';
@@ -200,34 +216,23 @@ const AppContent = () => {
     );
   }
 
-  // 2. Authenticated but has not completed onboarding
-  if (!isOnboardingCompleted && false) {
-    return (
-      <Routes>
-        <Route
-          path="*"
-          element={
-            <Onboarding
-              onCompleteOnboarding={(data) => {
-                completeOnboarding(data);
-                navigate('/dashboard');
-              }}
-              onAddHabit={addHabit}
-            />
-          }
-        />
-      </Routes>
-    );
-  }
-
-  // 3. Authenticated App Layout with full React Router
+  // 2. Authenticated App Layout with full React Router
   return (
     <AppLayout
       currentPath={getCurrentNavPath()}
       onNavigate={(path) => navigate(`/${path}`)}
       onOpenNewHabit={handleOpenNewHabit}
+      onOpenNewTask={() => navigate('/tasks')}
+      onOpenNewGoal={() => navigate('/goals')}
+      onAddWater={addWater}
+      onOpenFocus={() => setIsFocusModalOpen(true)}
       userProfile={userProfile}
       streakCount={stats.bestStreak}
+      theme={theme}
+      onToggleTheme={toggleTheme}
+      habits={habits}
+      goals={goals}
+      tasks={tasks}
       notifications={notifications}
       unreadCount={unreadCount}
       onMarkAllRead={markAllAsRead}
@@ -237,7 +242,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         
-        {/* Smart Daily Life Dashboard */}
+        {/* Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -267,6 +272,33 @@ const AppContent = () => {
               onResetBadHabit={resetBadHabit}
               onUseStreakFreeze={useStreakFreeze}
               onLogFocus={logFocusSession}
+              onNavigate={(path) => navigate(`/${path}`)}
+            />
+          }
+        />
+
+        {/* ⭐ MY DAY Signature Central Screen */}
+        <Route
+          path="/my-day"
+          element={
+            <MyDay
+              userProfile={userProfile}
+              habits={habits}
+              completions={completions}
+              tasks={tasks}
+              morningRoutine={morningRoutine}
+              nightRoutine={nightRoutine}
+              routineLogs={routineLogs}
+              wellnessLogs={wellnessLogs}
+              lifeScore={lifeScore}
+              onToggleHabit={toggleHabitCompletion}
+              onToggleTask={toggleTaskCompletion}
+              onToggleRoutine={toggleRoutineStep}
+              onAddWater={addWater}
+              onUpdateWellness={updateDailyWellness}
+              onOpenFocus={() => setIsFocusModalOpen(true)}
+              onOpenNewHabit={handleOpenNewHabit}
+              onOpenNewTask={() => navigate('/tasks')}
               onNavigate={(path) => navigate(`/${path}`)}
             />
           }
@@ -335,6 +367,32 @@ const AppContent = () => {
           }
         />
 
+        {/* Tasks Management */}
+        <Route
+          path="/tasks"
+          element={
+            <Tasks
+              tasks={tasks}
+              onAddTask={addTask}
+              onUpdateTask={updateTask}
+              onDeleteTask={deleteTask}
+              onToggleTaskCompletion={toggleTaskCompletion}
+            />
+          }
+        />
+
+        {/* Focus Hub */}
+        <Route
+          path="/focus"
+          element={
+            <Focus
+              focusSessions={focusSessions}
+              habits={habits}
+              onLogFocusSession={logFocusSession}
+            />
+          }
+        />
+
         {/* Wellness Hub (Water, Sleep, Mood, Energy, Screen Time) */}
         <Route
           path="/wellness"
@@ -349,7 +407,7 @@ const AppContent = () => {
           }
         />
 
-        {/* Daily Reflection & Wins Journal */}
+        {/* Daily Reflection Journal */}
         <Route
           path="/journal"
           element={
@@ -360,7 +418,7 @@ const AppContent = () => {
           }
         />
 
-        {/* Calendar & GitHub-Style Heatmap */}
+        {/* Calendar & Heatmap */}
         <Route
           path="/calendar"
           element={
@@ -372,7 +430,7 @@ const AppContent = () => {
           }
         />
 
-        {/* Advanced Behavioral Analytics */}
+        {/* Behavioral Analytics */}
         <Route
           path="/analytics"
           element={
@@ -417,6 +475,8 @@ const AppContent = () => {
           path="/settings"
           element={
             <Settings
+              theme={theme}
+              onToggleTheme={toggleTheme}
               onSeedDemoData={seedDemoData}
               onClearData={clearHabits}
               onResetOnboarding={() => {
@@ -438,6 +498,14 @@ const AppContent = () => {
         initialData={editingHabit}
       />
 
+      {/* Global Focus Pomodoro Timer Popup */}
+      <FocusModal
+        isOpen={isFocusModalOpen}
+        onClose={() => setIsFocusModalOpen(false)}
+        habits={habits}
+        onLogFocus={logFocusSession}
+      />
+
       {/* Achievement Unlocked Alert Toast */}
       {newAchievementAlert && (
         <Toast
@@ -449,7 +517,7 @@ const AppContent = () => {
         />
       )}
 
-      {/* Habit Action Toast (with undo support) */}
+      {/* Habit Action Toast */}
       {toastMessage && (
         <Toast
           toast={toastMessage}

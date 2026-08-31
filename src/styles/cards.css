@@ -9,7 +9,7 @@
 }
 
 .card:hover {
-  border-color: #D1D5DB;
+  border-color: var(--border-medium);
 }
 
 .card-header {

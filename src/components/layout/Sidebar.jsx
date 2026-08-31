@@ -1,9 +1,11 @@
 import React from 'react';
 import {
   LayoutDashboard,
-  CheckSquare,
   Sun,
+  CheckSquare,
+  Moon,
   Target,
+  Zap,
   Activity,
   PenTool,
   Calendar as CalendarIcon,
@@ -12,7 +14,7 @@ import {
   Settings as SettingsIcon,
   Flame,
   Plus,
-  Zap
+  Sparkles
 } from 'lucide-react';
 
 export const Sidebar = ({
@@ -23,14 +25,16 @@ export const Sidebar = ({
 }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'my-day', label: '⭐ My Day', icon: Sun },
     { id: 'habits', label: 'Habits', icon: CheckSquare },
-    { id: 'routines', label: 'Routines', icon: Sun },
+    { id: 'routines', label: 'Routines', icon: Moon },
     { id: 'goals', label: 'Goals', icon: Target },
-    { id: 'wellness', label: 'Wellness Hub', icon: Activity },
-    { id: 'journal', label: 'Daily Journal', icon: PenTool },
-    { id: 'calendar', label: 'Calendar & Heatmap', icon: CalendarIcon },
+    { id: 'tasks', label: 'Tasks', icon: CheckSquare },
+    { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
+    { id: 'focus', label: 'Focus', icon: Zap },
+    { id: 'journal', label: 'Journal', icon: PenTool },
     { id: 'analytics', label: 'Analytics', icon: BarChart2 },
-    { id: 'achievements', label: 'XP & Badges', icon: Award },
+    { id: 'achievements', label: 'Achievements', icon: Award },
     { id: 'settings', label: 'Settings', icon: SettingsIcon }
   ];
 
@@ -93,7 +97,7 @@ export const Sidebar = ({
                 lineHeight: 1.1
               }}
             >
-              STREAKLY 2.0
+              STREAKLY
             </div>
             <div style={{ fontSize: '0.675rem', color: '#60A5FA', fontWeight: '700', letterSpacing: '0.04em' }}>
               LIFE OPERATING SYSTEM
@@ -103,6 +107,7 @@ export const Sidebar = ({
 
         {/* Quick Add Habit Primary Action */}
         <button
+          type="button"
           onClick={onOpenNewHabit}
           className="btn btn-primary"
           style={{
@@ -123,20 +128,21 @@ export const Sidebar = ({
         </button>
 
         {/* Main Navigation Links */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPath === item.id;
 
             return (
               <button
+                type="button"
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.7rem',
-                  padding: '0.55rem 0.75rem',
+                  padding: '0.5rem 0.75rem',
                   borderRadius: 'var(--radius-md)',
                   backgroundColor: isActive ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
                   color: isActive ? '#60A5FA' : '#94A3B8',
@@ -162,7 +168,7 @@ export const Sidebar = ({
                   }
                 }}
               >
-                <Icon size={17} color={isActive ? '#60A5FA' : '#94A3B8'} />
+                <Icon size={16} color={isActive ? '#60A5FA' : '#94A3B8'} />
                 <span>{item.label}</span>
               </button>
             );
@@ -183,8 +189,8 @@ export const Sidebar = ({
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
           <div
             style={{
-              width: '32px',
-              height: '32px',
+              width: '30px',
+              height: '30px',
               borderRadius: 'var(--radius-full)',
               backgroundColor: 'rgba(249, 115, 22, 0.2)',
               color: '#F97316',
@@ -194,13 +200,13 @@ export const Sidebar = ({
               flexShrink: 0
             }}
           >
-            <Flame size={17} fill="#F97316" />
+            <Flame size={16} fill="#F97316" />
           </div>
           <div>
-            <div style={{ fontSize: '0.675rem', color: '#94A3B8', fontWeight: '700', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: '700', textTransform: 'uppercase' }}>
               Unbroken Streak
             </div>
-            <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--color-white)', marginTop: '1px' }}>
+            <div style={{ fontSize: '0.875rem', fontWeight: '800', color: 'var(--color-white)', marginTop: '1px' }}>
               {streakCount} {streakCount === 1 ? 'Day' : 'Days'} Active
             </div>
           </div>
