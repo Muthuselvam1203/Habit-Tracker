@@ -6,17 +6,55 @@ import {
   Trash2,
   Calendar,
   Check,
-  Sparkles,
   Flame,
   Trophy,
   Percent,
   Clock,
   CheckCircle2,
-  RotateCcw
+  RotateCcw,
+  Sparkles,
+  Moon,
+  Footprints,
+  Wind,
+  Brain,
+  PenTool,
+  PhoneCall,
+  Sun,
+  Dumbbell,
+  BookOpen,
+  Target,
+  Droplet,
+  HeartPulse,
+  Users,
+  Smile,
+  Coffee,
+  CheckSquare
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { formatTime, getPastDays, formatDateKey } from '../utils/dateUtils';
 import { calculateHabitStreak } from '../utils/streakUtils';
+import { getHabitColor } from '../data/habitOptions';
+
+const ICON_MAP = {
+  Sparkles,
+  Moon,
+  Footprints,
+  Wind,
+  Brain,
+  PenTool,
+  PhoneCall,
+  Sun,
+  Dumbbell,
+  BookOpen,
+  Target,
+  Droplet,
+  HeartPulse,
+  Users,
+  Smile,
+  Coffee,
+  CheckSquare,
+  Flame
+};
 
 export const HabitDetails = ({
   habit,
@@ -38,6 +76,8 @@ export const HabitDetails = ({
     );
   }
 
+  const habitColor = getHabitColor(habit);
+  const IconComp = ICON_MAP[habit.icon] || Sparkles;
   const { currentStreak, longestStreak, isCompletedToday } = calculateHabitStreak(habit, completions);
   const past30Days = getPastDays(30);
   const habitLogs = completions[habit.id] || {};
@@ -58,12 +98,12 @@ export const HabitDetails = ({
   return (
     <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', paddingBottom: '2.5rem' }}>
       {/* Top Back Navigation & Action Buttons */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="page-header-row">
         <Button variant="ghost" onClick={onBack} icon={ArrowLeft}>
           Back to Habits
         </Button>
 
-        <div style={{ display: 'flex', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <Button variant="secondary" onClick={() => onEdit(habit)} icon={Edit3}>
             Edit
           </Button>
@@ -84,32 +124,47 @@ export const HabitDetails = ({
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1.5rem',
-          backgroundColor: 'var(--color-white)'
+          gap: '1.25rem',
+          backgroundColor: 'var(--color-white)',
+          borderLeft: `5px solid ${habitColor}`
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
           <div
             style={{
-              width: '56px',
-              height: '56px',
+              width: '58px',
+              height: '58px',
               borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'var(--primary-blue)',
+              backgroundColor: habitColor,
               color: 'var(--color-white)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 18px rgba(37, 99, 235, 0.3)'
+              boxShadow: `0 4px 20px ${habitColor}45`,
+              flexShrink: 0
             }}
           >
-            <Sparkles size={28} />
+            <IconComp size={28} />
           </div>
 
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
               <h2 style={{ fontSize: '1.6rem', fontWeight: '800', color: 'var(--color-black)' }}>
                 {habit.name}
               </h2>
+              <span
+                style={{
+                  backgroundColor: `${habitColor}15`,
+                  color: habitColor,
+                  padding: '0.15rem 0.55rem',
+                  borderRadius: 'var(--radius-xs)',
+                  fontWeight: '700',
+                  fontSize: '0.75rem',
+                  textTransform: 'capitalize'
+                }}
+              >
+                {habit.category}
+              </span>
               {habit.archived && (
                 <span className="badge-navy">Archived</span>
               )}
@@ -120,20 +175,25 @@ export const HabitDetails = ({
           </div>
         </div>
 
-        <Button
-          variant={isCompletedToday ? 'secondary' : 'primary'}
+        <button
+          type="button"
           onClick={() => onToggleCompletion(habit.id)}
-          icon={Check}
-          size="lg"
+          className={`btn ${isCompletedToday ? 'btn-secondary' : 'btn-primary'} btn-lg`}
+          style={{
+            backgroundColor: isCompletedToday ? undefined : habitColor,
+            borderColor: isCompletedToday ? undefined : habitColor,
+            boxShadow: isCompletedToday ? undefined : `0 4px 14px ${habitColor}40`
+          }}
         >
-          {isCompletedToday ? 'Completed Today ✓' : 'Mark Done Today'}
-        </Button>
+          <Check size={18} />
+          <span>{isCompletedToday ? 'Completed Today ✓' : 'Mark Done Today'}</span>
+        </button>
       </div>
 
       {/* 4 Stat Cards for this Habit */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+      <div className="habit-details-stats-grid">
         <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--color-light-blue)', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: `${habitColor}18`, color: habitColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Flame size={20} />
           </div>
           <div>
@@ -143,7 +203,7 @@ export const HabitDetails = ({
         </div>
 
         <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--color-light-grey)', color: 'var(--color-black)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--color-light-grey)', color: 'var(--color-black)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Trophy size={20} />
           </div>
           <div>
@@ -153,7 +213,7 @@ export const HabitDetails = ({
         </div>
 
         <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--color-light-blue)', color: 'var(--primary-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: `${habitColor}18`, color: habitColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Percent size={20} />
           </div>
           <div>
@@ -163,7 +223,7 @@ export const HabitDetails = ({
         </div>
 
         <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--status-success-bg)', color: 'var(--status-success-text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--status-success-bg)', color: 'var(--status-success-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <CheckCircle2 size={20} />
           </div>
           <div>
@@ -178,7 +238,7 @@ export const HabitDetails = ({
         <div className="card-header">
           <div>
             <h4 className="card-title">
-              <Calendar size={18} color="var(--primary-blue)" /> 30-Day Activity Grid
+              <Calendar size={18} color={habitColor} /> 30-Day Activity Grid
             </h4>
             <p className="card-subtitle">
               Schedule: {targetDays.length === 7 ? 'Every Day' : targetDays.join(', ')} • Click any date cell to log or toggle completion
@@ -207,11 +267,12 @@ export const HabitDetails = ({
                   height: '42px',
                   borderRadius: 'var(--radius-sm)',
                   backgroundColor: isDone
-                    ? 'var(--primary-blue)'
+                    ? habitColor
                     : isDue
                     ? 'var(--color-light-grey)'
                     : '#FFFFFF',
-                  border: `1px solid ${isDone ? 'var(--primary-blue)' : 'var(--border-subtle)'}`,
+                  border: `1px solid ${isDone ? habitColor : 'var(--border-subtle)'}`,
+                  boxShadow: isDone ? `0 2px 8px ${habitColor}40` : 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -237,6 +298,14 @@ export const HabitDetails = ({
           Routine Configuration
         </h4>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-grey)', fontWeight: '700', textTransform: 'uppercase' }}>Activity Color</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '6px' }}>
+              <div style={{ width: '16px', height: '16px', borderRadius: 'var(--radius-full)', backgroundColor: habitColor, border: '1px solid rgba(0,0,0,0.1)' }} />
+              <span style={{ fontSize: '0.925rem', fontWeight: '700', color: 'var(--color-black)' }}>{habitColor}</span>
+            </div>
+          </div>
+
           <div>
             <div style={{ fontSize: '0.75rem', color: 'var(--color-text-grey)', fontWeight: '700', textTransform: 'uppercase' }}>Category</div>
             <div style={{ fontSize: '0.95rem', fontWeight: '700', textTransform: 'capitalize', marginTop: '4px', color: 'var(--color-black)' }}>

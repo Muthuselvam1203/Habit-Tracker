@@ -8,8 +8,18 @@ import {
   Dumbbell,
   PenTool,
   Moon,
+  Wind,
+  Brain,
+  PhoneCall,
+  Sun,
+  HeartPulse,
+  Users,
+  Smile,
+  Coffee,
+  CheckSquare,
   Check
 } from 'lucide-react';
+import { getHabitColor } from '../../data/habitOptions';
 
 const ICON_MAP = {
   Droplet,
@@ -19,7 +29,16 @@ const ICON_MAP = {
   Sparkles,
   Dumbbell,
   PenTool,
-  Moon
+  Moon,
+  Wind,
+  Brain,
+  PhoneCall,
+  Sun,
+  HeartPulse,
+  Users,
+  Smile,
+  Coffee,
+  CheckSquare
 };
 
 export const HabitOption = ({
@@ -28,11 +47,15 @@ export const HabitOption = ({
   onSelect
 }) => {
   const IconComponent = ICON_MAP[habit.icon] || Sparkles;
+  const habitColor = getHabitColor(habit);
 
   return (
     <div
       className={`habit-option-item ${isSelected ? 'selected' : ''}`}
       onClick={() => onSelect(habit)}
+      style={{
+        borderLeft: isSelected ? `4px solid ${habitColor}` : undefined
+      }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
         <div
@@ -40,8 +63,9 @@ export const HabitOption = ({
             width: '36px',
             height: '36px',
             borderRadius: 'var(--radius-sm)',
-            backgroundColor: `${habit.color}20`,
-            color: habit.color,
+            backgroundColor: `${habitColor}18`,
+            color: habitColor,
+            border: `1px solid ${habitColor}30`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
@@ -61,11 +85,11 @@ export const HabitOption = ({
 
       <div
         style={{
-          width: '20px',
-          height: '20px',
+          width: '22px',
+          height: '22px',
           borderRadius: 'var(--radius-full)',
-          border: `2px solid ${isSelected ? 'var(--primary-accent)' : 'var(--border-medium)'}`,
-          backgroundColor: isSelected ? 'var(--primary-accent)' : 'transparent',
+          border: `2px solid ${isSelected ? habitColor : 'var(--border-medium)'}`,
+          backgroundColor: isSelected ? habitColor : 'transparent',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -73,8 +97,9 @@ export const HabitOption = ({
           flexShrink: 0
         }}
       >
-        {isSelected && <Check size={12} strokeWidth={3} />}
+        {isSelected && <Check size={13} strokeWidth={3} />}
       </div>
     </div>
   );
 };
+

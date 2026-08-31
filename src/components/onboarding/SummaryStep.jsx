@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { CheckCircle2, Clock, Moon, Target, Sparkles } from 'lucide-react';
 import { GOAL_OPTIONS } from '../../data/goalOptions';
+import { getHabitColor } from '../../data/habitOptions';
 import { formatTime } from '../../utils/dateUtils';
 import confetti from 'canvas-confetti';
 
@@ -22,6 +23,7 @@ export const SummaryStep = ({
   }, []);
 
   const goalObj = GOAL_OPTIONS.find(g => g.id === selectedGoalId) || GOAL_OPTIONS[0];
+  const habitColor = firstHabit ? getHabitColor(firstHabit) : 'var(--primary-blue)';
 
   return (
     <div className="anim-fade-in">
@@ -72,12 +74,15 @@ export const SummaryStep = ({
 
         <div className="summary-tile">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <Sparkles size={18} color="var(--primary-blue)" />
+            <Sparkles size={18} color={habitColor} />
             <span className="summary-tile-label">First Habit</span>
           </div>
-          <span className="summary-tile-value">{firstHabit?.name || 'Daily Routine'}</span>
+          <span className="summary-tile-value" style={{ color: habitColor, fontWeight: '700' }}>
+            {firstHabit?.name || 'Daily Routine'}
+          </span>
         </div>
       </div>
     </div>
   );
 };
+

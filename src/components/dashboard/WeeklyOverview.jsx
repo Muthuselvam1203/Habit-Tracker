@@ -34,7 +34,7 @@ export const WeeklyOverview = ({ habits = [], completions = {} }) => {
       </div>
 
       {/* 7-Day Bar Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', marginTop: '0.5rem' }}>
+      <div className="weekly-overview-days-row">
         {weeklyTrends.map((d) => {
           const isPerfect = d.due > 0 && d.completed >= d.due;
 

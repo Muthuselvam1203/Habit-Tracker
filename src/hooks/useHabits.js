@@ -4,6 +4,7 @@ import { formatDateKey, getPastDays } from '../utils/dateUtils';
 import { calculateOverallStreaks, calculateHabitStreak } from '../utils/streakUtils';
 import { evaluateAchievements } from '../utils/achievementUtils';
 import { createNotification } from '../utils/notificationUtils';
+import { getHabitColor } from '../data/habitOptions';
 import confetti from 'canvas-confetti';
 
 const DEMO_HABITS = [
@@ -12,6 +13,7 @@ const DEMO_HABITS = [
     name: 'Practice meditation',
     category: 'personal',
     icon: 'Sparkles',
+    color: '#8B5CF6', // Purple
     timeOfDay: 'morning',
     targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     reminderTime: '07:00',
@@ -24,6 +26,7 @@ const DEMO_HABITS = [
     name: 'Walking',
     category: 'health',
     icon: 'Footprints',
+    color: '#10B981', // Emerald
     timeOfDay: 'morning',
     targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     reminderTime: '07:30',
@@ -36,6 +39,7 @@ const DEMO_HABITS = [
     name: 'Brain dump',
     category: 'productivity',
     icon: 'Brain',
+    color: '#F59E0B', // Amber
     timeOfDay: 'morning',
     targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
     reminderTime: '09:00',
@@ -48,6 +52,7 @@ const DEMO_HABITS = [
     name: 'Keep a journal',
     category: 'personal',
     icon: 'PenTool',
+    color: '#EC4899', // Pink
     timeOfDay: 'evening',
     targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     reminderTime: '21:30',
@@ -60,6 +65,7 @@ const DEMO_HABITS = [
     name: 'Sleep over 8h',
     category: 'sleep',
     icon: 'Moon',
+    color: '#6366F1', // Indigo
     timeOfDay: 'evening',
     targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     reminderTime: '22:30',
@@ -142,11 +148,13 @@ export const useHabits = () => {
 
   // Add a new habit
   const addHabit = useCallback((habitData) => {
+    const habitColor = habitData.color || getHabitColor(habitData);
     const newHabit = {
       id: `habit-${Date.now()}`,
       name: habitData.name.trim(),
       category: habitData.category || 'health',
       icon: habitData.icon || 'Sparkles',
+      color: habitColor,
       timeOfDay: habitData.timeOfDay || 'morning',
       targetDays: habitData.targetDays || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       reminderTime: habitData.reminderTime || '08:00',

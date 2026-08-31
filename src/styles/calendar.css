@@ -136,9 +136,14 @@
 }
 
 .day-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: var(--radius-full);
+  transition: transform var(--transition-fast);
+}
+
+.day-dot:hover {
+  transform: scale(1.4);
 }
 
 /* Day Inspector Details */

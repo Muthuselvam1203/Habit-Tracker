@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CalendarHeader } from './CalendarHeader';
 import { DayDetails } from './DayDetails';
 import { getMonthMatrix, formatDateKey, DAY_NAMES, getDayOfWeek } from '../../utils/dateUtils';
+import { getHabitColor } from '../../data/habitOptions';
 
 export const HabitCalendar = ({
   habits = [],
@@ -101,14 +102,20 @@ export const HabitCalendar = ({
 
                 {/* Habit Indicator Dots */}
                 <div className="day-dots-row">
-                  {completedHabits.slice(0, 5).map((h) => (
-                    <div
-                      key={h.id}
-                      className="day-dot"
-                      style={{ backgroundColor: 'var(--primary-blue)' }}
-                      title={h.name}
-                    />
-                  ))}
+                  {completedHabits.slice(0, 5).map((h) => {
+                    const dotColor = getHabitColor(h);
+                    return (
+                      <div
+                        key={h.id}
+                        className="day-dot"
+                        style={{
+                          backgroundColor: dotColor,
+                          boxShadow: `0 1px 3px ${dotColor}60`
+                        }}
+                        title={h.name}
+                      />
+                    );
+                  })}
                   {completedHabits.length > 5 && (
                     <span style={{ fontSize: '0.65rem', color: 'var(--color-text-grey)' }}>
                       +{completedHabits.length - 5}

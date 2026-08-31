@@ -37,10 +37,10 @@ export const Modal = ({
       aria-modal="true"
     >
       <div
-        className="anim-scale-in"
+        className="modal-dialog anim-scale-in"
         style={{
           width: '100%',
-          maxWidth,
+          maxWidth: `min(${maxWidth}, calc(100vw - 24px))`,
           backgroundColor: 'var(--color-white)',
           padding: '1.75rem',
           borderRadius: 'var(--radius-xl)',

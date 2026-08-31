@@ -94,6 +94,7 @@ export const HabitFilters = ({
       <div style={{ display: 'flex', gap: '0.4rem', overflowX: 'auto', paddingBottom: '4px' }}>
         {HABIT_CATEGORIES.map((cat) => {
           const isSelected = selectedCategory === cat.id;
+          const catColor = cat.color || 'var(--primary-blue)';
 
           return (
             <button
@@ -107,10 +108,24 @@ export const HabitFilters = ({
                 backgroundColor: isSelected ? 'var(--color-deep-navy)' : 'var(--color-white)',
                 color: isSelected ? 'var(--color-white)' : 'var(--color-text-grey)',
                 border: `1px solid ${isSelected ? 'var(--color-deep-navy)' : 'var(--border-subtle)'}`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
                 whiteSpace: 'nowrap',
-                transition: 'all var(--transition-fast)'
+                transition: 'all var(--transition-fast)',
+                cursor: 'pointer'
               }}
             >
+              {cat.id !== 'all' && (
+                <span
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: 'var(--radius-full)',
+                    backgroundColor: catColor
+                  }}
+                />
+              )}
               {cat.label}
             </button>
           );
@@ -119,3 +134,4 @@ export const HabitFilters = ({
     </div>
   );
 };
+

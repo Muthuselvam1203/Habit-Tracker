@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '../common/Button';
+import { getHabitColor } from '../../data/habitOptions';
 
 export const QuickAddHabit = ({ onAddHabit }) => {
   const [habitName, setHabitName] = useState('');
@@ -9,10 +10,14 @@ export const QuickAddHabit = ({ onAddHabit }) => {
     e.preventDefault();
     if (!habitName.trim()) return;
 
+    const trimmedName = habitName.trim();
+    const habitColor = getHabitColor({ name: trimmedName });
+
     onAddHabit({
-      name: habitName.trim(),
+      name: trimmedName,
       category: 'health',
       icon: 'Sparkles',
+      color: habitColor,
       timeOfDay: 'morning',
       targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       reminderTime: '08:00',

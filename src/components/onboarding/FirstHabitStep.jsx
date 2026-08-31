@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PRESET_ONBOARDING_HABITS } from '../../data/habitOptions';
+import { PRESET_ONBOARDING_HABITS, getHabitColor } from '../../data/habitOptions';
 import { Button } from '../common/Button';
 import {
   Sparkles,
@@ -32,11 +32,15 @@ export const FirstHabitStep = ({ selectedHabit, onSelectHabit }) => {
     e.preventDefault();
     if (!customName.trim()) return;
 
+    const trimmedName = customName.trim();
+    const habitColor = getHabitColor({ name: trimmedName });
+
     const customHabit = {
       id: `custom-${Date.now()}`,
-      name: customName.trim(),
+      name: trimmedName,
       category: 'personal',
       icon: 'Sparkles',
+      color: habitColor,
       timeOfDay: 'morning',
       targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       reminderTime: '08:00',
@@ -59,6 +63,7 @@ export const FirstHabitStep = ({ selectedHabit, onSelectHabit }) => {
         {PRESET_ONBOARDING_HABITS.map((habit) => {
           const IconComp = ICON_MAP[habit.icon] || Sparkles;
           const isSelected = selectedHabit?.name === habit.name;
+          const habitColor = getHabitColor(habit);
 
           return (
             <div
@@ -67,6 +72,10 @@ export const FirstHabitStep = ({ selectedHabit, onSelectHabit }) => {
               onClick={() => onSelectHabit(habit)}
               role="button"
               tabIndex={0}
+              style={{
+                borderColor: isSelected ? habitColor : undefined,
+                borderLeft: isSelected ? `4px solid ${habitColor}` : undefined
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
@@ -76,11 +85,12 @@ export const FirstHabitStep = ({ selectedHabit, onSelectHabit }) => {
             >
               <div
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '34px',
+                  height: '34px',
                   borderRadius: 'var(--radius-sm)',
-                  backgroundColor: isSelected ? 'var(--primary-blue)' : 'var(--color-light-grey)',
-                  color: isSelected ? 'var(--color-white)' : 'var(--color-black)',
+                  backgroundColor: isSelected ? habitColor : `${habitColor}18`,
+                  color: isSelected ? '#FFFFFF' : habitColor,
+                  border: `1px solid ${isSelected ? habitColor : `${habitColor}35`}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -94,7 +104,7 @@ export const FirstHabitStep = ({ selectedHabit, onSelectHabit }) => {
                 <span className="habit-preset-name">{habit.name}</span>
               </div>
 
-              {isSelected && <Check size={16} color="var(--primary-blue)" strokeWidth={3} />}
+              {isSelected && <Check size={16} color={habitColor} strokeWidth={3} />}
             </div>
           );
         })}
@@ -121,3 +131,4 @@ export const FirstHabitStep = ({ selectedHabit, onSelectHabit }) => {
     </div>
   );
 };
+

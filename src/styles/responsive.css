@@ -1,6 +1,6 @@
-/* Responsive Stylesheet */
+/* Responsive Stylesheet for Streakly */
 
-/* Tablet (max-width: 1024px) */
+/* Tablet & Smaller Desktops (max-width: 1024px) */
 @media (max-width: 1024px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -17,101 +17,318 @@
   .analytics-metrics-strip {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .habit-details-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* Mobile Devices (max-width: 768px) */
 @media (max-width: 768px) {
   :root {
-    --topbar-height: 58px;
-    --mobile-nav-height: 62px;
+    --topbar-height: 56px;
+    --mobile-nav-height: 64px;
   }
 
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* Hide Desktop Sidebar */
   .sidebar-container {
     display: none !important;
   }
 
+  /* Full Width Main Layout with Mobile Bottom Nav Padding */
   .app-main-layout {
     margin-left: 0 !important;
-    padding-bottom: calc(var(--mobile-nav-height) + 20px) !important;
+    padding-bottom: calc(var(--mobile-nav-height) + 24px) !important;
+    min-height: 100vh;
+    width: 100%;
   }
 
   .app-main-content {
-    padding: 1rem !important;
+    padding: 1rem 0.85rem !important;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
   }
 
   .topbar-container {
     padding: 0 1rem !important;
   }
 
+  /* Dashboard Header */
   .dashboard-header-banner {
-    padding: 1.25rem 1.25rem !important;
+    padding: 1.25rem 1rem !important;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem !important;
   }
 
   .dashboard-header-content h1 {
     font-size: 1.35rem !important;
+    line-height: 1.3;
   }
 
+  .dashboard-header-content p {
+    font-size: 0.85rem !important;
+  }
+
+  .dashboard-header-meta {
+    flex-wrap: wrap;
+    gap: 0.4rem !important;
+  }
+
+  /* Page Header Row */
+  .page-header-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.85rem !important;
+  }
+
+  /* 2x2 Stats Grids */
   .stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .habits-stats-strip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .habit-details-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
   }
 
   .stat-card {
-    padding: 1rem;
-    gap: 0.75rem;
+    padding: 0.85rem 1rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .stat-icon-box {
+    width: 38px !important;
+    height: 38px !important;
   }
 
   .stat-card-value {
-    font-size: 1.25rem;
+    font-size: 1.25rem !important;
   }
 
-  .goal-options-grid {
-    grid-template-columns: 1fr;
+  /* Form 2-column to 1-column */
+  .form-row-2col {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
   }
 
-  .habit-presets-grid {
-    grid-template-columns: 1fr;
+  /* Habit Cards */
+  .habit-card-item {
+    padding: 0.85rem 1rem !important;
+    gap: 0.75rem !important;
+    flex-wrap: wrap;
   }
 
-  .time-preset-grid {
-    grid-template-columns: repeat(3, 1fr);
+  .habit-card-left {
+    min-width: 0;
+    flex: 1 1 200px;
+    gap: 0.75rem !important;
   }
 
+  .habit-name {
+    font-size: 0.925rem !important;
+  }
+
+  .habit-card-right {
+    gap: 0.5rem !important;
+  }
+
+  .habit-actions-group {
+    opacity: 1 !important; /* Always visible on touch devices */
+  }
+
+  .habit-actions-group .btn {
+    padding: 0.35rem !important;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  /* Weekly Consistency Strip */
+  .weekly-overview-days-row {
+    gap: 4px !important;
+  }
+
+  .weekly-overview-days-row > div {
+    padding: 0.5rem 0.25rem !important;
+  }
+
+  .weekly-overview-days-row > div > div:nth-child(2) {
+    font-size: 0.95rem !important;
+  }
+
+  /* Calendar */
   .calendar-card {
-    padding: 1rem;
+    padding: 1rem 0.75rem !important;
+  }
+
+  .calendar-month-title {
+    font-size: 1.15rem !important;
+  }
+
+  .calendar-weekdays-row {
+    font-size: 0.7rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .calendar-days-grid {
+    gap: 4px !important;
   }
 
   .calendar-day-cell {
-    min-height: 52px;
-    padding: 0.35rem;
+    min-height: 52px !important;
+    padding: 0.3rem 0.25rem !important;
+    border-radius: var(--radius-sm) !important;
+  }
+
+  .day-number {
+    font-size: 0.775rem !important;
+  }
+
+  .day-completion-tag {
+    font-size: 0.625rem !important;
+    padding: 0.05rem 0.25rem !important;
+  }
+
+  .day-dot {
+    width: 5px !important;
+    height: 5px !important;
+  }
+
+  .day-details-panel {
+    padding: 1.25rem 1rem !important;
+  }
+
+  /* Analytics */
+  .analytics-metrics-strip {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  .metric-box {
+    padding: 0.85rem 1rem !important;
+  }
+
+  .metric-box-val {
+    font-size: 1.2rem !important;
+  }
+
+  /* Achievements */
+  .achievements-progress-banner {
+    padding: 1.25rem 1rem !important;
+    flex-direction: column;
+    align-items: flex-start !important;
   }
 
   .achievements-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
   }
 
+  /* Onboarding Flow */
+  .goal-options-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .habit-presets-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .time-preset-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Show Bottom Mobile Navigation Bar */
   .mobile-nav-bar {
     display: flex !important;
   }
 }
 
-/* Small Mobile (max-width: 480px) */
+/* Small Mobile Phones (max-width: 480px) */
 @media (max-width: 480px) {
+  .app-main-content {
+    padding: 0.75rem 0.5rem !important;
+  }
+
+  .habits-stats-strip {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .stat-card {
+    padding: 0.75rem !important;
+  }
+
+  .stat-card-value {
+    font-size: 1.15rem !important;
+  }
+
+  .habit-details-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
   }
 
   .habit-card-item {
-    padding: 0.85rem 1rem;
-    gap: 0.65rem;
+    padding: 0.75rem 0.85rem !important;
   }
 
-  .habit-actions-group {
-    opacity: 1; /* Always show on touch devices */
+  .habit-checkbox {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .habit-icon-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .habit-icon-avatar svg {
+    width: 15px !important;
+    height: 15px !important;
   }
 
   .time-preset-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .card {
+    padding: 1.15rem 1rem !important;
+  }
+
+  /* Modal bottom margin to clear nav */
+  .modal-dialog {
+    padding: 1.25rem 1rem !important;
+    max-height: 85vh !important;
+    margin-bottom: calc(var(--mobile-nav-height) + 12px) !important;
   }
 }
 
@@ -125,11 +342,13 @@
   height: var(--mobile-nav-height);
   background-color: var(--color-white);
   border-top: 1px solid var(--border-subtle);
-  box-shadow: 0 -4px 16px rgba(8, 11, 16, 0.06);
-  z-index: 100;
+  box-shadow: 0 -4px 18px rgba(8, 11, 16, 0.08);
+  z-index: 900;
   align-items: center;
   justify-content: space-around;
-  padding: 0 0.5rem env(safe-area-inset-bottom, 0px) 0.5rem;
+  padding: 0 0.5rem calc(env(safe-area-inset-bottom, 0px) + 2px) 0.5rem;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 .mobile-nav-item {
@@ -137,14 +356,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  padding: 0.35rem 0.5rem;
+  gap: 0.2rem;
+  padding: 0.35rem 0.4rem;
   color: var(--color-text-grey);
   font-size: 0.7rem;
   font-weight: 600;
   transition: all var(--transition-fast);
   border-radius: var(--radius-sm);
   flex: 1;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .mobile-nav-item svg {
@@ -154,8 +375,10 @@
 
 .mobile-nav-item.active {
   color: var(--primary-blue);
+  font-weight: 700;
 }
 
 .mobile-nav-item:active {
   transform: scale(0.92);
 }
+

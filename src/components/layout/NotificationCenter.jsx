@@ -41,7 +41,7 @@ export const NotificationCenter = ({
         top: 'calc(100% + 8px)',
         right: '0',
         width: '360px',
-        maxWidth: '90vw',
+        maxWidth: 'calc(100vw - 20px)',
         backgroundColor: 'var(--color-white)',
         border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--radius-lg)',

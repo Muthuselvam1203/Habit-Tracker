@@ -86,7 +86,7 @@ export const Profile = ({
       </div>
 
       {/* 4 Summary Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+      <div className="profile-stats-grid">
         <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
           <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--color-text-grey)', textTransform: 'uppercase' }}>Current Streak</div>
           <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--color-black)', marginTop: '0.2rem' }}>
@@ -134,7 +134,7 @@ export const Profile = ({
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-row-2col">
             <div className="form-group">
               <label className="form-label">
                 <span>Wake Up Time</span>

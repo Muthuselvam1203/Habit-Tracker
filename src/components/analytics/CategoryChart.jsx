@@ -1,6 +1,7 @@
 import React from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { getCategoryBreakdown } from '../../utils/analyticsUtils';
+import { getCategoryColor } from '../../data/habitOptions';
 
 export const CategoryChart = ({ habits = [], completions = {} }) => {
   const data = getCategoryBreakdown(habits, completions);
@@ -23,10 +24,11 @@ export const CategoryChart = ({ habits = [], completions = {} }) => {
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
                 const item = payload[0].payload;
+                const catColor = getCategoryColor(item.categoryKey);
                 return (
-                  <div style={{ backgroundColor: 'var(--color-deep-navy)', color: '#FFFFFF', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem' }}>
-                    <div style={{ fontWeight: '700' }}>{item.name}</div>
-                    <div style={{ color: '#60A5FA', marginTop: '2px' }}>{item.totalHabits} Habits</div>
+                  <div style={{ backgroundColor: 'var(--color-deep-navy)', color: '#FFFFFF', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem', borderLeft: `3px solid ${catColor}` }}>
+                    <div style={{ fontWeight: '700', color: '#FFFFFF' }}>{item.name}</div>
+                    <div style={{ color: catColor, marginTop: '2px', fontWeight: '600' }}>{item.totalHabits} Habits</div>
                     <div style={{ color: '#94A3B8', fontSize: '0.75rem' }}>{item.totalCompletions} Total Check-ins</div>
                   </div>
                 );
@@ -34,9 +36,9 @@ export const CategoryChart = ({ habits = [], completions = {} }) => {
               return null;
             }}
           />
-          <Bar dataKey="totalCompletions" fill="#2563EB" radius={[0, 4, 4, 0]}>
+          <Bar dataKey="totalCompletions" radius={[0, 4, 4, 0]}>
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#2563EB' : '#0B1728'} />
+              <Cell key={`cell-${index}`} fill={getCategoryColor(entry.categoryKey)} />
             ))}
           </Bar>
         </BarChart>
@@ -44,3 +46,4 @@ export const CategoryChart = ({ habits = [], completions = {} }) => {
     </div>
   );
 };
+

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../common/Button';
-import { HABIT_CATEGORIES, HABIT_ICONS } from '../../data/habitOptions';
+import { HABIT_CATEGORIES, HABIT_ICONS, HABIT_COLORS, getHabitColor } from '../../data/habitOptions';
 import {
   Sparkles,
   Moon,
@@ -21,7 +21,7 @@ import {
   CheckSquare,
   Flame,
   Clock,
-  Calendar
+  Check
 } from 'lucide-react';
 
 const ICON_MAP = {
@@ -51,6 +51,7 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [category, setCategory] = useState(initialData?.category || 'health');
   const [icon, setIcon] = useState(initialData?.icon || 'Sparkles');
+  const [color, setColor] = useState(initialData?.color || getHabitColor(initialData) || '#10B981');
   const [timeOfDay, setTimeOfDay] = useState(initialData?.timeOfDay || 'morning');
   const [targetDays, setTargetDays] = useState(initialData?.targetDays || ALL_DAYS);
   const [reminderTime, setReminderTime] = useState(initialData?.reminderTime || '08:00');
@@ -66,6 +67,15 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
     }
   };
 
+  const handleCategoryChange = (newCat) => {
+    setCategory(newCat);
+    // If color hasn't been explicitly customized, suggest category color
+    if (!initialData?.color) {
+      const catObj = HABIT_CATEGORIES.find(c => c.id === newCat);
+      if (catObj?.color) setColor(catObj.color);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -74,6 +84,7 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
       name: name.trim(),
       category,
       icon,
+      color,
       timeOfDay,
       targetDays,
       reminderTime,
@@ -81,18 +92,40 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
     });
   };
 
+  const PreviewIcon = ICON_MAP[icon] || Sparkles;
+
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Habit Name */}
+      {/* Activity Name & Live Preview Banner */}
       <div className="form-group">
-        <label className="form-label" htmlFor="habit-name-input">
-          <span>Habit Name *</span>
-        </label>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+          <label className="form-label" htmlFor="habit-name-input" style={{ margin: 0 }}>
+            <span>Activity / Habit Name *</span>
+          </label>
+          {/* Live Preview Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.2rem 0.65rem',
+              borderRadius: 'var(--radius-full)',
+              backgroundColor: `${color}18`,
+              color: color,
+              border: `1px solid ${color}35`,
+              fontSize: '0.775rem',
+              fontWeight: '700'
+            }}
+          >
+            <PreviewIcon size={14} />
+            <span>{name.trim() || 'Preview'}</span>
+          </div>
+        </div>
         <input
           id="habit-name-input"
           type="text"
           className="form-input"
-          placeholder="e.g. Read 20 pages, Morning Run..."
+          placeholder="e.g. Walking, Sleep over 8h, Meditation, Read 20 pages..."
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -101,13 +134,13 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
       </div>
 
       {/* Category & Time of Day */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="form-row-2col">
         <div className="form-group">
           <label className="form-label">Category</label>
           <select
             className="form-select"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value)}
           >
             {HABIT_CATEGORIES.filter(c => c.id !== 'all').map(cat => (
               <option key={cat.id} value={cat.id}>
@@ -132,6 +165,39 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
         </div>
       </div>
 
+      {/* Activity Color Picker Swatches */}
+      <div className="form-group">
+        <label className="form-label">Activity Color</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.5rem', marginTop: '0.25rem' }}>
+          {HABIT_COLORS.map(c => {
+            const isSelected = color.toLowerCase() === c.hex.toLowerCase();
+            return (
+              <button
+                type="button"
+                key={c.id}
+                onClick={() => setColor(c.hex)}
+                title={c.label}
+                style={{
+                  height: '38px',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: c.hex,
+                  border: isSelected ? '2.5px solid var(--color-black)' : '1px solid rgba(0,0,0,0.1)',
+                  boxShadow: isSelected ? `0 0 0 2px ${c.hex}80` : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transform: isSelected ? 'scale(1.06)' : 'scale(1)',
+                  transition: 'all var(--transition-fast)'
+                }}
+              >
+                {isSelected && <Check size={16} color="#FFFFFF" strokeWidth={3} />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Icon Picker */}
       <div className="form-group">
         <label className="form-label">Select Icon</label>
@@ -149,9 +215,9 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
                   width: '36px',
                   height: '36px',
                   borderRadius: 'var(--radius-sm)',
-                  backgroundColor: isSelected ? 'var(--color-deep-navy)' : 'var(--color-light-grey)',
-                  color: isSelected ? 'var(--color-white)' : 'var(--color-text-grey)',
-                  border: `1.5px solid ${isSelected ? 'var(--color-deep-navy)' : 'var(--border-subtle)'}`,
+                  backgroundColor: isSelected ? `${color}25` : 'var(--color-light-grey)',
+                  color: isSelected ? color : 'var(--color-text-grey)',
+                  border: `1.5px solid ${isSelected ? color : 'var(--border-subtle)'}`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

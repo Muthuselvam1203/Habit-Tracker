@@ -25,6 +25,7 @@ import {
   CheckSquare
 } from 'lucide-react';
 import { calculateHabitStreak } from '../../utils/streakUtils';
+import { getHabitColor } from '../../data/habitOptions';
 
 const ICON_MAP = {
   Sparkles,
@@ -60,21 +61,39 @@ export const HabitCard = ({
   const IconComp = ICON_MAP[habit.icon] || Sparkles;
   const targetDays = habit.targetDays || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const frequencyLabel = targetDays.length === 7 ? 'Daily' : `${targetDays.length} days/wk`;
+  const habitColor = getHabitColor(habit);
 
   return (
-    <div className={`habit-card-item ${isCompletedToday ? 'is-completed' : ''}`}>
+    <div
+      className={`habit-card-item ${isCompletedToday ? 'is-completed' : ''}`}
+      style={{
+        borderLeft: `4px solid ${habitColor}`
+      }}
+    >
       {/* Left Area: Checkbox, Icon, Name & Metadata */}
       <div className="habit-card-left">
         <button
           type="button"
           onClick={() => onToggleCompletion(habit.id)}
           className={`habit-checkbox ${isCompletedToday ? 'checked' : ''}`}
+          style={{
+            backgroundColor: isCompletedToday ? habitColor : 'var(--color-white)',
+            borderColor: isCompletedToday ? habitColor : undefined,
+            boxShadow: isCompletedToday ? `0 2px 10px ${habitColor}50` : undefined
+          }}
           aria-label={`Mark ${habit.name} as ${isCompletedToday ? 'incomplete' : 'complete'}`}
         >
           {isCompletedToday && <Check size={18} strokeWidth={3} />}
         </button>
 
-        <div className="habit-icon-avatar">
+        <div
+          className="habit-icon-avatar"
+          style={{
+            backgroundColor: `${habitColor}15`,
+            color: habitColor,
+            border: `1px solid ${habitColor}30`
+          }}
+        >
           <IconComp size={18} />
         </div>
 
@@ -88,7 +107,16 @@ export const HabitCard = ({
           </div>
 
           <div className="habit-meta-row">
-            <span className="habit-category-tag">{habit.category || 'health'}</span>
+            <span
+              className="habit-category-tag"
+              style={{
+                backgroundColor: `${habitColor}12`,
+                color: habitColor,
+                fontWeight: '700'
+              }}
+            >
+              {habit.category || 'health'}
+            </span>
             <span className="habit-schedule-tag">• {frequencyLabel}</span>
             {habit.timeOfDay && (
               <span className="habit-schedule-tag">• {habit.timeOfDay}</span>
@@ -99,7 +127,15 @@ export const HabitCard = ({
 
       {/* Right Area: Streak Pill & Action Buttons */}
       <div className="habit-card-right">
-        <div className="habit-streak-pill" title={`${currentStreak} day streak`}>
+        <div
+          className="habit-streak-pill"
+          style={{
+            backgroundColor: `${habitColor}14`,
+            color: habitColor,
+            border: `1px solid ${habitColor}28`
+          }}
+          title={`${currentStreak} day streak`}
+        >
           <Flame size={14} />
           <span>{currentStreak}d</span>
         </div>
@@ -141,3 +177,4 @@ export const HabitCard = ({
     </div>
   );
 };
+
