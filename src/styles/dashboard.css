@@ -1,0 +1,448 @@
+/* Dashboard Layout */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-bottom: 2.5rem;
+}
+
+/* Header Greeting Banner */
+.dashboard-header-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1.75rem 2rem;
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+}
+
+.dashboard-header-content h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--color-black);
+  margin-bottom: 0.35rem;
+}
+
+.dashboard-header-content p {
+  color: var(--color-text-grey);
+  font-size: 0.925rem;
+}
+
+.dashboard-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+}
+
+.dashboard-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-grey);
+  background-color: var(--color-light-grey);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+/* 4 KPI Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.stat-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.stat-card:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.stat-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-card-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--color-black);
+  margin-top: 0.15rem;
+  letter-spacing: -0.02em;
+}
+
+.stat-card-subtitle {
+  font-size: 0.775rem;
+  color: var(--color-text-grey);
+  margin-top: 0.15rem;
+}
+
+/* Main Dashboard 2-Column Split */
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.dashboard-primary-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.dashboard-secondary-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Quick Add Habit Bar */
+.quick-add-card {
+  background-color: var(--color-white);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all var(--transition-fast);
+}
+
+.quick-add-card:focus-within {
+  border-color: var(--primary-blue);
+  border-style: solid;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.quick-add-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.925rem;
+  color: var(--color-black);
+}
+
+.quick-add-input::placeholder {
+  color: var(--color-text-grey);
+}
+
+/* Today's Habits Section */
+.today-habits-section {
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.today-habits-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.today-habits-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.today-habits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Habit Card Item */
+.habit-card-item {
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.habit-card-item:hover {
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-xs);
+  transform: translateY(-1px);
+}
+
+.habit-card-item.is-completed {
+  background-color: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+.habit-card-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Custom Interactive Checkbox */
+.habit-checkbox {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 2px solid #CBD5E1;
+  background-color: var(--color-white);
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.habit-checkbox:hover {
+  border-color: var(--primary-blue);
+  transform: scale(1.08);
+}
+
+.habit-checkbox.checked {
+  background-color: var(--color-blue);
+  border-color: var(--color-blue);
+  color: var(--color-white);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+.habit-icon-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-light-blue);
+  color: var(--primary-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.habit-details-box {
+  flex: 1;
+  min-width: 0;
+}
+
+.habit-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-black);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.habit-name:hover {
+  color: var(--primary-blue);
+}
+
+.habit-card-item.is-completed .habit-name {
+  color: var(--color-text-grey);
+  text-decoration: line-through;
+}
+
+.habit-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.habit-category-tag {
+  font-size: 0.725rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-xs);
+  background-color: var(--color-light-grey);
+  color: var(--color-text-grey);
+  text-transform: capitalize;
+}
+
+.habit-schedule-tag {
+  font-size: 0.725rem;
+  color: var(--color-text-grey);
+}
+
+.habit-card-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.habit-streak-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  background-color: var(--color-light-blue);
+  color: var(--color-blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.habit-actions-group {
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: opacity var(--transition-fast);
+}
+
+.habit-card-item:hover .habit-actions-group {
+  opacity: 1;
+}
+
+/* Daily Score Card */
+.daily-score-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.daily-score-ring-wrap {
+  margin: 1rem 0;
+}
+
+.daily-score-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-black);
+}
+
+.daily-score-max {
+  font-size: 0.85rem;
+  color: var(--color-text-grey);
+  font-weight: 500;
+}
+
+/* Smart Insights Section */
+.insights-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.insight-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.insight-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-light-blue);
+  color: var(--primary-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.insight-text {
+  font-size: 0.875rem;
+  color: var(--color-black);
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+/* Streak Milestones Card */
+.milestones-card {
+  background: linear-gradient(145deg, var(--color-deep-navy) 0%, var(--color-navy) 100%);
+  color: var(--color-white);
+  border: 1px solid var(--color-secondary-navy);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.milestones-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+
+.milestone-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.milestone-step.achieved {
+  background-color: rgba(37, 99, 235, 0.2);
+  border-color: rgba(37, 99, 235, 0.4);
+}

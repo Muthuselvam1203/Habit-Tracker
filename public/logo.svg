@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <defs>
+    <linearGradient id="logoFlame" x1="8" y1="44" x2="40" y2="4" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF4500" />
+      <stop offset="50%" stop-color="#FF7A00" />
+      <stop offset="100%" stop-color="#FFD200" />
+    </linearGradient>
+    <linearGradient id="textGrad" x1="56" y1="24" x2="190" y2="24" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+    <filter id="logoGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Flame Icon -->
+  <g transform="translate(2, 0)">
+    <path d="M22 6C22 6 26 13 23 18C20 23 15 21 14 27C12.9 33.5 18.8 41.5 25.7 41.5C33.6 41.5 37.4 34.3 34.7 26.2C32.7 20.3 27.9 15.9 27.9 15.9C27.9 15.9 29.3 20 26.6 22.7C24.3 25 22.1 22.7 22.1 22.7C22.1 22.7 23.9 18.2 22.1 12.8C20.7 8.8 22 6 22 6Z" fill="url(#logoFlame)" filter="url(#logoGlow)"/>
+    <path d="M21.2 25.8C21.2 25.8 18.5 29.4 20.3 33C22.1 36.6 25.7 36.6 26.6 33C27.5 29.4 24.8 27.6 24.8 27.6C24.8 27.6 25.7 29.4 24.3 30.3C23 31.2 22.1 29.4 22.1 29.4C22.1 29.4 23 27.6 21.2 25.8Z" fill="#FFF275"/>
+  </g>
+  <!-- Brand Text -->
+  <text x="52" y="32" font-family="'Outfit', 'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="800" letter-spacing="-0.5" fill="url(#textGrad)">
+    Streak<tspan fill="#FF7A00">ly</tspan>
+  </text>
+  <circle cx="162" cy="18" r="3.5" fill="#FF7A00" />
+</svg>

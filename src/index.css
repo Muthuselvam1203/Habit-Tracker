@@ -1,0 +1,12 @@
+/* Streakly Master Stylesheet */
+@import './styles/variables.css';
+@import './styles/global.css';
+@import './styles/buttons.css';
+@import './styles/forms.css';
+@import './styles/cards.css';
+@import './styles/dashboard.css';
+@import './styles/onboarding.css';
+@import './styles/calendar.css';
+@import './styles/analytics.css';
+@import './styles/achievements.css';
+@import './styles/responsive.css';

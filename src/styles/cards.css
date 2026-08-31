@@ -1,0 +1,63 @@
+/* Cards & Containers */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.card:hover {
+  border-color: #D1D5DB;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  gap: 1rem;
+}
+
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-black);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-grey);
+  margin-top: 0.2rem;
+}
+
+/* Strategic Navy Card Style */
+.card-navy {
+  background: linear-gradient(145deg, var(--color-deep-navy) 0%, var(--color-navy) 100%);
+  color: var(--color-white);
+  border: 1px solid var(--color-secondary-navy);
+  box-shadow: var(--shadow-md);
+}
+
+.card-navy .card-title,
+.card-navy h1,
+.card-navy h2,
+.card-navy h3,
+.card-navy h4 {
+  color: var(--color-white);
+}
+
+.card-navy p,
+.card-navy .card-subtitle {
+  color: #94A3B8;
+}
+
+/* Soft Blue Accent Card */
+.card-soft-blue {
+  background-color: var(--color-light-blue);
+  border: 1px solid #BFDBFE;
+}

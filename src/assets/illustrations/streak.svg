@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none">
+  <defs>
+    <linearGradient id="bigFlame1" x1="70" y1="150" x2="170" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#DC2626" />
+      <stop offset="45%" stop-color="#EA580C" />
+      <stop offset="85%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FDE047" />
+    </linearGradient>
+    <linearGradient id="bigFlameInner" x1="100" y1="140" x2="140" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="60%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+    <filter id="bigFlameGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <!-- Background Glow -->
+  <circle cx="120" cy="95" r="60" fill="#FF5500" opacity="0.25" filter="url(#bigFlameGlow)" />
+  <!-- Main Flame -->
+  <path d="M120 18C120 18 140 54 128 78C116 102 92 94 88 118C83.2 146.8 109.6 162 136 162C171.2 162 188 130 176 94C167.2 67.6 146 48 146 48C146 48 152 66 140 78C130 88 120 78 120 78C120 78 128 58 120 36C114 20 120 18 120 18Z" fill="url(#bigFlame1)" filter="url(#bigFlameGlow)"/>
+  <!-- Inner Flame Core -->
+  <path d="M117 92C117 92 105 108 113 124C121 140 137 140 141 124C145 108 133 100 133 100C133 100 137 108 131 112C125 116 121 108 121 108C121 108 125 100 117 92Z" fill="url(#bigFlameInner)"/>
+</svg>

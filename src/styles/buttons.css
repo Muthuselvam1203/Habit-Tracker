@@ -1,0 +1,133 @@
+/* Button System */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary: Solid Brand Blue */
+.btn-primary {
+  background-color: var(--primary-blue);
+  color: var(--color-white);
+  box-shadow: var(--shadow-xs);
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-blue-hover);
+  box-shadow: var(--shadow-blue);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Navy: Deep Navy Primary Button */
+.btn-navy {
+  background-color: var(--color-deep-navy);
+  color: var(--color-white);
+  border: 1px solid var(--color-deep-navy);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-navy:hover {
+  background-color: var(--color-navy);
+  transform: translateY(-1px);
+}
+
+/* Secondary: Crisp Light Button with Border */
+.btn-secondary {
+  background-color: var(--color-white);
+  color: var(--color-black);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-light-grey);
+  border-color: var(--border-medium);
+  color: var(--color-black);
+}
+
+/* Soft Blue Button */
+.btn-soft-blue {
+  background-color: var(--color-light-blue);
+  color: var(--primary-blue);
+  border: 1px solid transparent;
+}
+
+.btn-soft-blue:hover {
+  background-color: #DDEBFF;
+}
+
+/* Ghost / Minimal Button */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-text-grey);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover {
+  background-color: var(--color-light-grey);
+  color: var(--color-black);
+}
+
+/* Danger Button */
+.btn-danger {
+  background-color: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+.btn-danger:hover {
+  background-color: #FCA5A5;
+  color: #7F1D1D;
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: 0.85rem 1.6rem;
+  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+}
+
+.btn-icon {
+  padding: 0.55rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon.btn-sm {
+  padding: 0.35rem;
+}

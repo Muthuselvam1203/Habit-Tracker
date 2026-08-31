@@ -1,0 +1,95 @@
+/* Analytics Dashboard */
+.analytics-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-bottom: 2.5rem;
+}
+
+.analytics-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.analytics-chart-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.analytics-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.metric-box {
+  background-color: var(--color-light-grey);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-box-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metric-box-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-black);
+  margin-top: 0.25rem;
+}
+
+.metric-box-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-grey);
+  margin-top: 0.15rem;
+}
+
+/* Habit Leaderboard Table */
+.habit-leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.habit-leaderboard-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.habit-leaderboard-table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--color-black);
+}
+
+.habit-leaderboard-table tr:last-child td {
+  border-bottom: none;
+}

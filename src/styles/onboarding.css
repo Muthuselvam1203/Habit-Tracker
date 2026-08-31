@@ -1,0 +1,261 @@
+/* Onboarding Layout */
+.onboarding-page-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: var(--bg-surface);
+}
+
+.onboarding-card {
+  width: 100%;
+  max-width: 580px;
+  background-color: var(--color-white);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 2.25rem;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.onboarding-brand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1rem;
+}
+
+.onboarding-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-black);
+}
+
+/* Progress Step Bar */
+.onboarding-progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-light-grey);
+  transition: background-color var(--transition-normal);
+}
+
+.progress-segment.active {
+  background-color: var(--primary-blue);
+}
+
+/* Step Header */
+.step-header {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-black);
+  margin-bottom: 0.35rem;
+}
+
+.step-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-grey);
+}
+
+/* Preset Time Grid */
+.time-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.time-preset-btn {
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-subtle);
+  background-color: var(--color-white);
+  color: var(--color-black);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.time-preset-btn:hover {
+  border-color: var(--primary-blue);
+  background-color: var(--color-light-blue);
+}
+
+.time-preset-btn.selected {
+  border-color: var(--primary-blue);
+  background-color: var(--color-light-blue);
+  color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Target Goal Cards Grid */
+.goal-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+  margin: 1rem 0;
+}
+
+.goal-option-card {
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  background-color: var(--color-white);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.goal-option-card:hover {
+  border-color: var(--border-medium);
+  background-color: var(--color-light-grey);
+}
+
+.goal-option-card.selected {
+  border-color: var(--primary-blue);
+  background-color: var(--color-light-blue);
+  box-shadow: 0 0 0 1px var(--primary-blue);
+}
+
+.goal-card-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-light-grey);
+  color: var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goal-option-card.selected .goal-card-icon-box {
+  background-color: var(--color-blue);
+  color: var(--color-white);
+}
+
+.goal-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+.goal-card-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-grey);
+  line-height: 1.35;
+}
+
+/* Habit Option Cards Grid */
+.habit-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.habit-preset-item {
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  background-color: var(--color-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all var(--transition-fast);
+}
+
+.habit-preset-item:hover {
+  border-color: var(--border-medium);
+  background-color: var(--color-light-grey);
+}
+
+.habit-preset-item.selected {
+  border-color: var(--primary-blue);
+  background-color: var(--color-light-blue);
+  color: var(--primary-blue);
+}
+
+.habit-preset-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.habit-preset-item.selected .habit-preset-name {
+  color: var(--primary-blue);
+}
+
+/* Custom Habit Creator Box */
+.custom-habit-box {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+/* Summary / Confirmation Step */
+.summary-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.summary-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.15rem;
+  background-color: var(--color-light-grey);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.summary-tile-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-grey);
+}
+
+.summary-tile-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-black);
+}
+
+/* Footer Step Navigation Buttons */
+.onboarding-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.25rem;
+}
