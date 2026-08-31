@@ -12,11 +12,27 @@ import {
   Sparkles,
   Award,
   Calendar,
-  Layers
+  Layers,
+  CloudRain,
+  Waves,
+  Flame as FireIcon,
+  Headphones,
+  Trees,
+  Bell
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { formatDateKey } from '../utils/dateUtils';
+import { ambientAudio } from '../utils/ambientAudio';
 import confetti from 'canvas-confetti';
+
+const SOUNDSCAPES = [
+  { id: 'rain', name: 'Rain & Storm', icon: CloudRain, color: '#0284C7', desc: 'Gentle raindrops & storm' },
+  { id: 'ocean', name: 'Ocean Waves', icon: Waves, color: '#06B6D4', desc: 'Calming rhythmic swells' },
+  { id: 'campfire', name: 'Campfire', icon: FireIcon, color: '#F97316', desc: 'Warm crackling embers' },
+  { id: 'whitenoise', name: 'Brown Noise', icon: Headphones, color: '#8B5CF6', desc: 'Deep focus frequency' },
+  { id: 'forest', name: 'Forest Birds', icon: Trees, color: '#10B981', desc: 'Pine breeze & birdsong' },
+  { id: 'bowl', name: 'Tibetan Bowl', icon: Bell, color: '#EAB308', desc: 'Resonant harmonic chime' }
+];
 
 export const Focus = ({
   focusSessions = [],
@@ -28,6 +44,10 @@ export const Focus = ({
   const [isRunning, setIsRunning] = useState(false);
   const [selectedHabitId, setSelectedHabitId] = useState('');
   const [category, setCategory] = useState('Deep Work');
+
+  // Ambient Sound State
+  const [activeSound, setActiveSound] = useState(null);
+  const [volume, setVolume] = useState(0.5);
 
   const todayKey = formatDateKey(new Date());
 
@@ -54,6 +74,13 @@ export const Focus = ({
     return () => clearInterval(timer);
   }, [isRunning, secondsLeft]);
 
+  // Clean up ambient audio on unmount
+  useEffect(() => {
+    return () => {
+      ambientAudio.stop();
+    };
+  }, []);
+
   const handleSelectPreset = (mins) => {
     setIsRunning(false);
     setPresetMinutes(mins);
@@ -75,6 +102,23 @@ export const Focus = ({
     handleReset();
   };
 
+  const handleToggleSound = (soundId) => {
+    if (activeSound === soundId) {
+      ambientAudio.stop();
+      setActiveSound(null);
+    } else {
+      ambientAudio.setVolume(volume);
+      ambientAudio.play(soundId);
+      setActiveSound(soundId);
+    }
+  };
+
+  const handleVolumeChange = (e) => {
+    const val = parseFloat(e.target.value);
+    setVolume(val);
+    ambientAudio.setVolume(val);
+  };
+
   const mins = Math.floor(secondsLeft / 60);
   const secs = secondsLeft % 60;
   const timeFormatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
@@ -85,10 +129,10 @@ export const Focus = ({
       {/* Header */}
       <div>
         <h2 style={{ fontSize: '1.75rem', fontWeight: '900', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Zap size={24} color="var(--primary-blue)" /> Deep Work & Focus Timer
+          <Zap size={24} color="var(--primary-blue)" /> Deep Work & Ambient Focus Timer
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
-          Execute uninterrupted blocks of high-leverage cognitive flow. Track every deep work session.
+          Execute uninterrupted blocks of cognitive flow with procedural ambient soundscapes and habit integration.
         </p>
       </div>
 
@@ -310,6 +354,91 @@ export const Focus = ({
           >
             <Check size={18} /> Log Session
           </button>
+        </div>
+      </div>
+
+      {/* AMBIENT SOUNDSCAPES / WHITE NOISE SECTION */}
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+          <div>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Headphones size={18} color="var(--primary-blue)" /> Focus White Noise & Ambient Soundscapes
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.2rem' }}>
+              Built-in procedural sound generator to mask background distractions.
+            </p>
+          </div>
+
+          {/* Volume Control */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--bg-surface)', padding: '0.4rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+            {volume === 0 ? <VolumeX size={16} color="var(--text-secondary)" /> : <Volume2 size={16} color="var(--primary-blue)" />}
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={handleVolumeChange}
+              style={{ width: '100px', cursor: 'pointer' }}
+              title="Ambient Volume"
+            />
+            <span style={{ fontSize: '0.75rem', fontWeight: '700', minWidth: '32px' }}>
+              {Math.round(volume * 100)}%
+            </span>
+          </div>
+        </div>
+
+        {/* Soundscape Buttons Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
+          {SOUNDSCAPES.map(snd => {
+            const SIcon = snd.icon;
+            const isPlaying = activeSound === snd.id;
+            return (
+              <button
+                key={snd.id}
+                type="button"
+                onClick={() => handleToggleSound(snd.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.85rem',
+                  borderRadius: 'var(--radius-md)',
+                  border: isPlaying ? `2px solid ${snd.color}` : '1px solid var(--border-subtle)',
+                  backgroundColor: isPlaying ? `${snd.color}15` : 'var(--bg-surface)',
+                  color: isPlaying ? snd.color : 'var(--text-primary)',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    backgroundColor: isPlaying ? snd.color : 'var(--bg-card)',
+                    color: isPlaying ? '#FFFFFF' : snd.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}
+                >
+                  <SIcon size={18} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span>{snd.name}</span>
+                    {isPlaying && <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', borderRadius: '4px', backgroundColor: snd.color, color: '#FFFFFF', fontWeight: '800' }}>PLAYING</span>}
+                  </div>
+                  <div style={{ fontSize: '0.725rem', color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {snd.desc}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

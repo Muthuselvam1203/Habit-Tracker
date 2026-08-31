@@ -9,11 +9,14 @@ export const Habits = ({
   habits = [],
   completions = {},
   onToggleCompletion,
+  onIncrement,
+  onLogNote,
   onOpenHabitDetails,
   onOpenNewHabit,
   onOpenEdit,
   onToggleArchive,
-  onDelete
+  onDelete,
+  onStartTimer
 }) => {
   const [statusTab, setStatusTab] = useState('active'); // 'active', 'all', 'archived'
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -149,11 +152,14 @@ export const Habits = ({
         habits={filtered}
         completions={completions}
         onToggleCompletion={onToggleCompletion}
+        onIncrement={onIncrement}
+        onLogNote={onLogNote}
         onOpenHabitDetails={onOpenHabitDetails}
         onOpenNewHabit={onOpenNewHabit}
         onOpenEdit={onOpenEdit}
         onToggleArchive={onToggleArchive}
         onDelete={onDelete}
+        onStartTimer={onStartTimer}
       />
     </div>
   );

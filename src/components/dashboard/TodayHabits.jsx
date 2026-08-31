@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { HabitCard } from './HabitCard';
+import { TickitHabitCard } from './TickitHabitCard';
+import { HabitStatisticsModal } from '../habits/HabitStatisticsModal';
 import { EmptyState } from '../common/EmptyState';
-import { Plus, CheckSquare, Sun, Moon, Sparkles, Shield, Clock } from 'lucide-react';
+import { Plus, CheckSquare, Sun, Moon, Sparkles, Shield, Clock, LayoutGrid, List } from 'lucide-react';
 import { getDayOfWeek, formatDateKey } from '../../utils/dateUtils';
 
 export const TodayHabits = ({
@@ -37,6 +39,9 @@ export const TodayHabits = ({
     h => !!completions[h.id]?.[todayKey]
   ).length;
 
+  const [cardStyle, setCardStyle] = useState('tickit'); // 'tickit' | 'detailed'
+  const [statsHabit, setStatsHabit] = useState(null);
+
   return (
     <div className="today-habits-section">
       <div className="today-habits-header" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
@@ -51,8 +56,39 @@ export const TodayHabits = ({
           )}
         </div>
 
-        {/* Action Controls & Streak Freeze */}
+        {/* Action Controls & Streak Freeze & View Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', backgroundColor: 'var(--bg-surface)', borderRadius: '8px', padding: '2px', border: '1px solid var(--border-subtle)' }}>
+            <button
+              type="button"
+              onClick={() => setCardStyle('tickit')}
+              className="btn btn-ghost btn-sm"
+              style={{
+                padding: '0.2rem 0.45rem',
+                backgroundColor: cardStyle === 'tickit' ? 'var(--primary-blue)' : 'transparent',
+                color: cardStyle === 'tickit' ? '#FFFFFF' : 'var(--text-secondary)',
+                borderRadius: '6px'
+              }}
+              title="Saturated Pill View (Tickit Style)"
+            >
+              <LayoutGrid size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setCardStyle('detailed')}
+              className="btn btn-ghost btn-sm"
+              style={{
+                padding: '0.2rem 0.45rem',
+                backgroundColor: cardStyle === 'detailed' ? 'var(--primary-blue)' : 'transparent',
+                color: cardStyle === 'detailed' ? '#FFFFFF' : 'var(--text-secondary)',
+                borderRadius: '6px'
+              }}
+              title="Detailed Cards View"
+            >
+              <List size={14} />
+            </button>
+          </div>
+
           {onUseStreakFreeze && (
             <button
               type="button"
@@ -134,21 +170,46 @@ export const TodayHabits = ({
           onAction={onOpenNewHabit}
         />
       ) : (
-        <div className="today-habits-list">
+        <div className="today-habits-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {filteredHabits.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={habit}
-              completions={completions}
-              onToggleCompletion={onToggleCompletion}
-              onOpenDetails={onOpenHabitDetails}
-              onOpenEdit={onOpenEdit}
-              onToggleArchive={onToggleArchive}
-              onDelete={onDelete}
-              onStartTimer={onStartTimer}
-            />
+            cardStyle === 'tickit' ? (
+              <TickitHabitCard
+                key={habit.id}
+                habit={habit}
+                completions={completions}
+                dateKey={todayKey}
+                onToggleCompletion={onToggleCompletion}
+                onOpenDetails={(h) => setStatsHabit(h)}
+                onStartTimer={onStartTimer}
+              />
+            ) : (
+              <HabitCard
+                key={habit.id}
+                habit={habit}
+                completions={completions}
+                onToggleCompletion={onToggleCompletion}
+                onOpenDetails={onOpenHabitDetails}
+                onOpenEdit={onOpenEdit}
+                onToggleArchive={onToggleArchive}
+                onDelete={onDelete}
+                onStartTimer={onStartTimer}
+              />
+            )
           ))}
         </div>
+      )}
+
+      {/* Habit Statistics Modal (Screenshot 2 Replica) */}
+      {statsHabit && (
+        <HabitStatisticsModal
+          habit={statsHabit}
+          completions={completions}
+          onClose={() => setStatsHabit(null)}
+          onOpenEdit={(h) => {
+            if (onOpenEdit) onOpenEdit(h);
+            setStatsHabit(null);
+          }}
+        />
       )}
     </div>
   );

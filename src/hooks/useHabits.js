@@ -174,7 +174,7 @@ const generateDemoCompletions = () => {
   };
 
   const past20 = getPastDays(20);
-  
+
   past20.forEach((day, index) => {
     if (index >= 6) completions['habit-1'][day.dateKey] = { completedAt: day.dateKey, timerLoggedMinutes: 15 };
     if (index >= 8) completions['habit-2'][day.dateKey] = { completedAt: day.dateKey };
@@ -192,7 +192,7 @@ const generateDemoCompletions = () => {
 const generateDemoWellness = () => {
   const wellness = {};
   const todayKey = formatDateKey(new Date());
-  
+
   const past30 = getPastDays(30);
   past30.forEach((d, i) => {
     wellness[d.dateKey] = {
@@ -264,6 +264,15 @@ const generateDemoRoutines = () => {
   return routines;
 };
 
+const DEFAULT_CHALLENGES_PROGRESS = {
+  'morning-routine-30': {
+    challengeId: 'morning-routine-30',
+    startedAt: new Date(Date.now() - 14 * 86400000).toISOString(),
+    completedDays: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+    status: 'active'
+  }
+};
+
 export const useHabits = () => {
   const [theme, setTheme] = useLocalStorage('theme', 'light');
   const [habits, setHabits] = useLocalStorage('habits', DEMO_HABITS);
@@ -276,6 +285,7 @@ export const useHabits = () => {
   const [wellnessLogs, setWellnessLogs] = useLocalStorage('wellness_logs', generateDemoWellness);
   const [badHabits, setBadHabits] = useLocalStorage('bad_habits', DEFAULT_BAD_HABITS);
   const [goals, setGoals] = useLocalStorage('goals', DEFAULT_GOALS);
+  const [challengesProgress, setChallengesProgress] = useLocalStorage('challenges_progress', DEFAULT_CHALLENGES_PROGRESS);
   const [userXp, setUserXp] = useLocalStorage('user_xp', 3150);
   const [streakFreezes, setStreakFreezes] = useLocalStorage('streak_freezes', 2);
   const [unlockedAchievements, setUnlockedAchievements] = useLocalStorage('unlocked_achievements', [
@@ -290,7 +300,7 @@ export const useHabits = () => {
     'focus-master',
     'life-optimizer'
   ]);
-  
+
   // Modals & alerts
   const [newAchievementAlert, setNewAchievementAlert] = useState(null);
   const [activeMilestone, setActiveMilestone] = useState(null);
@@ -331,7 +341,7 @@ export const useHabits = () => {
             spread: 70,
             origin: { y: 0.6 }
           });
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   }, [habits, completions, unlockedAchievements, setUnlockedAchievements, awardXp]);
@@ -344,13 +354,18 @@ export const useHabits = () => {
       category: habitData.category || 'health',
       icon: habitData.icon || 'Sparkles',
       color: habitData.color || '#2563EB',
-      timeOfDay: habitData.timeOfDay || 'morning',
+      timeOfDay: habitData.timeOfDay || 'anytime',
       habitType: habitData.habitType || 'boolean',
       timerTargetMinutes: habitData.timerTargetMinutes || 30,
       measurableUnit: habitData.measurableUnit || '',
-      measurableTarget: habitData.measurableTarget || 1,
+      measurableTarget: Number(habitData.measurableTarget) || 1,
+      measurableStep: Number(habitData.measurableStep) || 1,
+      frequencyType: habitData.frequencyType || 'daily',
+      weeklyTargetDays: Number(habitData.weeklyTargetDays) || 3,
+      intervalDays: Number(habitData.intervalDays) || 2,
       difficulty: habitData.difficulty || 'medium',
       goalId: habitData.goalId || null,
+      challengeId: habitData.challengeId || null,
       targetDays: habitData.targetDays || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       reminderTime: habitData.reminderTime || '08:00',
       description: habitData.description || '',
@@ -383,6 +398,136 @@ export const useHabits = () => {
   const toggleArchiveHabit = useCallback((id) => {
     setHabits(prev => prev.map(h => h.id === id ? { ...h, archived: !h.archived } : h));
   }, [setHabits]);
+
+  // Stepper increment / decrement for measurable habits (e.g. +250ml water, +5 pages)
+  const incrementHabitProgress = useCallback((habitId, delta, dateKey = formatDateKey(new Date())) => {
+    const habit = habits.find(h => h.id === habitId);
+    if (!habit) return;
+
+    const target = habit.measurableTarget || 1;
+
+    setCompletions(prev => {
+      const habitLogs = { ...(prev[habitId] || {}) };
+      const currentLog = habitLogs[dateKey] || { measurableValue: 0 };
+      const currentValue = currentLog.measurableValue || 0;
+      const nextValue = Math.max(0, currentValue + delta);
+
+      if (nextValue === 0 && !currentLog.notes) {
+        delete habitLogs[dateKey];
+      } else {
+        const isReached = nextValue >= target;
+        habitLogs[dateKey] = {
+          ...currentLog,
+          completedAt: isReached ? (currentLog.completedAt || new Date().toISOString()) : null,
+          measurableValue: nextValue
+        };
+      }
+
+      return {
+        ...prev,
+        [habitId]: habitLogs
+      };
+    });
+
+    if (delta > 0) {
+      awardXp(5, `${habit.name} progress`);
+    }
+  }, [habits, setCompletions, awardXp]);
+
+  // Save diary reflection memo for a habit completion
+  const logHabitDiaryNote = useCallback((habitId, dateKey = formatDateKey(new Date()), notes = '') => {
+    setCompletions(prev => {
+      const habitLogs = { ...(prev[habitId] || {}) };
+      const currentLog = habitLogs[dateKey] || { completedAt: new Date().toISOString() };
+      habitLogs[dateKey] = {
+        ...currentLog,
+        notes: notes.trim()
+      };
+      return {
+        ...prev,
+        [habitId]: habitLogs
+      };
+    });
+    createNotification('Habit Note Saved', 'Diary note updated.');
+  }, [setCompletions]);
+
+  // 30-Day Challenge Management
+  const joinChallenge = useCallback((challenge, customHabits = []) => {
+    if (!challenge) return;
+
+    setChallengesProgress(prev => ({
+      ...prev,
+      [challenge.id]: {
+        challengeId: challenge.id,
+        startedAt: new Date().toISOString(),
+        completedDays: [],
+        status: 'active'
+      }
+    }));
+
+    // Auto-create preset habits from the challenge if not already in habits
+    const habitsToCreate = customHabits.length > 0 ? customHabits : (challenge.presetHabits || []);
+    habitsToCreate.forEach(preset => {
+      const alreadyExists = habits.some(h => h.name.toLowerCase() === preset.name.toLowerCase());
+      if (!alreadyExists) {
+        addHabit({
+          ...preset,
+          challengeId: challenge.id
+        });
+      }
+    });
+
+    awardXp(50, `Joined ${challenge.title}`);
+    createNotification('Challenge Started! 🚀', `Enrolled in "${challenge.title}". Stage 1 begins today!`);
+    try {
+      confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+    } catch (e) { }
+  }, [setChallengesProgress, habits, addHabit, awardXp]);
+
+  const leaveChallenge = useCallback((challengeId) => {
+    setChallengesProgress(prev => {
+      const next = { ...prev };
+      delete next[challengeId];
+      return next;
+    });
+    createNotification('Challenge Removed', 'Progress reset.');
+  }, [setChallengesProgress]);
+
+  const toggleChallengeDay = useCallback((challengeId, dayNumber) => {
+    setChallengesProgress(prev => {
+      const current = prev[challengeId] || { challengeId, startedAt: new Date().toISOString(), completedDays: [], status: 'active' };
+      const days = current.completedDays || [];
+      let nextDays;
+      let justCompletedAll = false;
+
+      if (days.includes(dayNumber)) {
+        nextDays = days.filter(d => d !== dayNumber);
+      } else {
+        nextDays = [...days, dayNumber].sort((a, b) => a - b);
+        awardXp(20, `Challenge Day ${dayNumber} completed`);
+        if (nextDays.length === 30) {
+          justCompletedAll = true;
+        }
+      }
+
+      if (justCompletedAll) {
+        awardXp(200, `Completed 30-Day Challenge`);
+        createNotification('30-Day Master! 🏆', `You completed the entire journey! Certificate unlocked.`);
+        try {
+          confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+        } catch (e) { }
+      }
+
+      return {
+        ...prev,
+        [challengeId]: {
+          ...current,
+          completedDays: nextDays,
+          status: nextDays.length === 30 ? 'completed' : 'active'
+        }
+      };
+    });
+  }, [setChallengesProgress, awardXp]);
 
   const toggleHabitCompletion = useCallback((habitId, dateKey = formatDateKey(new Date()), extraData = {}) => {
     let wasCompleted = false;
@@ -422,7 +567,7 @@ export const useHabits = () => {
           origin: { y: 0.8 },
           colors: ['#2563EB', '#10B981', '#8B5CF6', '#F59E0B']
         });
-      } catch (e) {}
+      } catch (e) { }
 
       if (habit) {
         const nextCompletions = {
@@ -430,7 +575,7 @@ export const useHabits = () => {
           [habitId]: { ...(completions[habitId] || {}), [dateKey]: { completedAt: new Date().toISOString() } }
         };
         const { currentStreak } = calculateHabitStreak(habit, nextCompletions);
-        
+
         if ([3, 7, 14, 30, 60, 100].includes(currentStreak)) {
           setActiveMilestone({
             streak: currentStreak,
@@ -741,7 +886,7 @@ export const useHabits = () => {
 
   const stats = calculateOverallStreaks(habits, completions);
   const userLevel = calculateUserLevel(userXp);
-  
+
   const todayKey = formatDateKey(new Date());
   const todayRoutines = routineLogs[todayKey] || { morningCompletedIds: [], nightCompletedIds: [] };
   const lifeScore = calculateLifeScore({
@@ -773,6 +918,12 @@ export const useHabits = () => {
     wellnessLogs,
     badHabits,
     goals,
+    challengesProgress,
+    joinChallenge,
+    leaveChallenge,
+    toggleChallengeDay,
+    incrementHabitProgress,
+    logHabitDiaryNote,
     userXp,
     userLevel,
     streakFreezes,

@@ -292,6 +292,88 @@ export const HabitDetails = ({
         </div>
       </div>
 
+      {/* WEEKLY BAR CHART & REFLECTION LOGS (SCREENSHOT 2 REPLICA) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.25rem' }}>
+        {/* Weekly Bar Chart Card */}
+        <div className="tickit-stat-bar-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: '1.15rem', fontWeight: '900', color: '#FFFFFF' }}>
+                Weekly Breakdown
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#9CA3AF', fontWeight: '700', marginTop: '2px' }}>
+                {past30Days[6]?.dateKey} - {past30Days[0]?.dateKey}
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#FFFFFF' }}>
+                31.7 min
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#9CA3AF', fontWeight: '700' }}>
+                Avg
+              </div>
+            </div>
+          </div>
+
+          <div className="tickit-bar-chart-container">
+            <div className="tickit-target-line" style={{ top: '35%' }}>
+              <span className="tickit-target-pill">33</span>
+            </div>
+
+            {[
+              { day: 'S', height: 55, type: 'blue' },
+              { day: 'M', height: 65, type: 'blue' },
+              { day: 'T', height: 40, type: 'blue' },
+              { day: 'W', height: 85, type: 'blue' },
+              { day: 'T', height: 50, type: 'blue' },
+              { day: 'F', height: 70, type: 'orange' },
+              { day: 'S', height: 0, type: 'dot' }
+            ].map((b, i) => (
+              <div key={i} className="tickit-bar-col">
+                {b.type === 'dot' ? (
+                  <div className="tickit-bar-dot" />
+                ) : (
+                  <div className={`tickit-bar-fill ${b.type}`} style={{ height: `${b.height}px` }} />
+                )}
+                <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#9CA3AF' }}>
+                  {b.day}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Daily Diary / Reflection Card */}
+        <div style={{ backgroundColor: '#14171E', borderRadius: '20px', padding: '1.5rem', border: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '1rem' }}>
+          <div style={{ fontSize: '0.8rem', fontWeight: '800', color: '#9CA3AF', textTransform: 'uppercase' }}>
+            Latest Habit Memo & Reflection
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ textAlign: 'center', minWidth: '42px', borderRight: '1px solid rgba(255, 255, 255, 0.1)', paddingRight: '0.85rem' }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: '900', color: '#FFFFFF', lineHeight: 1 }}>
+                7
+              </div>
+              <div style={{ fontSize: '0.65rem', fontWeight: '800', color: '#9CA3AF', textTransform: 'uppercase', marginTop: '2px' }}>
+                AUG
+              </div>
+            </div>
+
+            <div style={{ fontSize: '1.75rem' }}>
+              😄
+            </div>
+
+            <div style={{ flex: 1, fontSize: '0.875rem', fontWeight: '600', color: '#D1D5DB', lineHeight: '1.45' }}>
+              "I can feel my body getting stronger and more energized than ever before!"
+            </div>
+          </div>
+
+          <div style={{ fontSize: '0.75rem', color: '#6B7280', fontWeight: '600' }}>
+            Reflections help deepen your neural pathways and automaticity.
+          </div>
+        </div>
+      </div>
+
       {/* Routine Configuration Details */}
       <div className="card">
         <h4 className="card-title" style={{ marginBottom: '1.25rem' }}>

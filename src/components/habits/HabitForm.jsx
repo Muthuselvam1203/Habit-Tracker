@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { Button } from '../common/Button';
-import { HABIT_CATEGORIES, HABIT_ICONS, HABIT_COLORS, getHabitColor } from '../../data/habitOptions';
+import {
+  HABIT_CATEGORIES,
+  HABIT_ICONS,
+  HABIT_COLORS,
+  MEASURABLE_UNITS,
+  FREQUENCY_TYPES,
+  TIME_OF_DAY_OPTIONS,
+  PRESET_LIBRARY,
+  getHabitColor
+} from '../../data/habitOptions';
 import {
   Sparkles,
   Moon,
@@ -22,7 +31,12 @@ import {
   Flame,
   Clock,
   Check,
-  Play
+  Play,
+  Zap,
+  ShieldCheck,
+  Award,
+  Layers,
+  ChevronDown
 } from 'lucide-react';
 
 const ICON_MAP = {
@@ -43,25 +57,52 @@ const ICON_MAP = {
   Smile,
   Coffee,
   CheckSquare,
-  Flame
+  Flame,
+  ShieldCheck,
+  Clock,
+  Zap,
+  Layers,
+  Award
 };
 
 const ALL_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export const HabitForm = ({ initialData, onSave, onCancel }) => {
+  const [activeTab, setActiveTab] = useState(initialData ? 'custom' : 'presets');
   const [name, setName] = useState(initialData?.name || '');
   const [category, setCategory] = useState(initialData?.category || 'health');
   const [icon, setIcon] = useState(initialData?.icon || 'Sparkles');
   const [color, setColor] = useState(initialData?.color || getHabitColor(initialData) || '#10B981');
-  const [timeOfDay, setTimeOfDay] = useState(initialData?.timeOfDay || 'morning');
+  const [timeOfDay, setTimeOfDay] = useState(initialData?.timeOfDay || 'anytime');
   const [habitType, setHabitType] = useState(initialData?.habitType || 'boolean');
   const [timerTargetMinutes, setTimerTargetMinutes] = useState(initialData?.timerTargetMinutes || 30);
-  const [measurableUnit, setMeasurableUnit] = useState(initialData?.measurableUnit || 'pages');
-  const [measurableTarget, setMeasurableTarget] = useState(initialData?.measurableTarget || 20);
+  const [measurableUnit, setMeasurableUnit] = useState(initialData?.measurableUnit || 'ml');
+  const [measurableTarget, setMeasurableTarget] = useState(initialData?.measurableTarget || 2000);
+  const [measurableStep, setMeasurableStep] = useState(initialData?.measurableStep || 250);
+  const [frequencyType, setFrequencyType] = useState(initialData?.frequencyType || 'daily');
+  const [weeklyTargetDays, setWeeklyTargetDays] = useState(initialData?.weeklyTargetDays || 3);
+  const [intervalDays, setIntervalDays] = useState(initialData?.intervalDays || 2);
   const [difficulty, setDifficulty] = useState(initialData?.difficulty || 'medium');
   const [targetDays, setTargetDays] = useState(initialData?.targetDays || ALL_DAYS);
   const [reminderTime, setReminderTime] = useState(initialData?.reminderTime || '08:00');
   const [description, setDescription] = useState(initialData?.description || '');
+
+  const applyPreset = (preset) => {
+    setName(preset.name);
+    setCategory(preset.category || 'health');
+    setIcon(preset.icon || 'Sparkles');
+    setColor(preset.color || '#10B981');
+    setTimeOfDay(preset.timeOfDay || 'anytime');
+    setHabitType(preset.habitType || 'boolean');
+    if (preset.timerTargetMinutes) setTimerTargetMinutes(preset.timerTargetMinutes);
+    if (preset.measurableUnit) setMeasurableUnit(preset.measurableUnit);
+    if (preset.measurableTarget) setMeasurableTarget(preset.measurableTarget);
+    if (preset.measurableStep) setMeasurableStep(preset.measurableStep);
+    if (preset.difficulty) setDifficulty(preset.difficulty);
+    if (preset.reminderTime) setReminderTime(preset.reminderTime);
+    if (preset.description) setDescription(preset.description);
+    setActiveTab('custom');
+  };
 
   const toggleDay = (day) => {
     if (targetDays.includes(day)) {
@@ -70,6 +111,15 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
       }
     } else {
       setTargetDays([...targetDays, day]);
+    }
+  };
+
+  const handleUnitChange = (uId) => {
+    setMeasurableUnit(uId);
+    const unitObj = MEASURABLE_UNITS.find(u => u.id === uId);
+    if (unitObj) {
+      setMeasurableTarget(unitObj.defaultTarget);
+      setMeasurableStep(unitObj.defaultStep);
     }
   };
 
@@ -95,6 +145,10 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
       timerTargetMinutes: Number(timerTargetMinutes) || 30,
       measurableUnit,
       measurableTarget: Number(measurableTarget) || 1,
+      measurableStep: Number(measurableStep) || 1,
+      frequencyType,
+      weeklyTargetDays: Number(weeklyTargetDays) || 3,
+      intervalDays: Number(intervalDays) || 2,
       difficulty,
       targetDays,
       reminderTime,
@@ -105,302 +159,448 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
   const PreviewIcon = ICON_MAP[icon] || Sparkles;
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Activity Name & Live Preview Banner */}
-      <div className="form-group">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-          <label className="form-label" htmlFor="habit-name-input" style={{ margin: 0 }}>
-            <span>Habit / Action Name *</span>
-          </label>
-          {/* Live Preview Badge */}
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              padding: '0.2rem 0.65rem',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: `${color}18`,
-              color: color,
-              border: `1px solid ${color}35`,
-              fontSize: '0.775rem',
-              fontWeight: '700'
-            }}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* Top Tab Bar: Preset Library vs Custom Form */}
+      {!initialData && (
+        <div style={{ display: 'flex', backgroundColor: 'var(--bg-surface)', padding: '0.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
+          <button
+            type="button"
+            onClick={() => setActiveTab('presets')}
+            className={`btn btn-sm ${activeTab === 'presets' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ flex: 1, fontWeight: '800', fontSize: '0.8rem' }}
           >
-            <PreviewIcon size={14} />
-            <span>{name.trim() || 'Preview'}</span>
-          </div>
-        </div>
-        <input
-          id="habit-name-input"
-          type="text"
-          className="form-input"
-          placeholder="e.g. Walking, Deep Work & Coding, Read 20 pages, Meditation..."
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          autoFocus
-        />
-      </div>
-
-      {/* Habit Type Selector (Boolean / Timer / Measurable) */}
-      <div className="form-group">
-        <label className="form-label">Tracking Mode</label>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-          {[
-            { id: 'boolean', label: '✓ Yes / No', desc: 'Standard check-in' },
-            { id: 'timer', label: '⏱️ Timed', desc: 'Target duration' },
-            { id: 'measurable', label: '🎯 Measurable', desc: 'Pages, glasses, etc' }
-          ].map(t => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setHabitType(t.id)}
-              style={{
-                padding: '0.65rem 0.5rem',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: habitType === t.id ? 'var(--primary-blue-light)' : 'var(--color-light-grey)',
-                border: habitType === t.id ? '2px solid var(--primary-blue)' : '1px solid var(--border-subtle)',
-                color: habitType === t.id ? 'var(--primary-blue)' : 'var(--color-black)',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ fontSize: '0.85rem', fontWeight: '800' }}>{t.label}</div>
-              <div style={{ fontSize: '0.675rem', color: 'var(--color-text-grey)', marginTop: '2px' }}>{t.desc}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Conditional Inputs based on Habit Type */}
-      {habitType === 'timer' && (
-        <div className="form-group anim-scale-in">
-          <label className="form-label">Target Duration (Minutes)</label>
-          <input
-            type="number"
-            min="1"
-            max="720"
-            className="form-input"
-            value={timerTargetMinutes}
-            onChange={(e) => setTimerTargetMinutes(e.target.value)}
-          />
+            ✨ Popular Presets
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('custom')}
+            className={`btn btn-sm ${activeTab === 'custom' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ flex: 1, fontWeight: '800', fontSize: '0.8rem' }}
+          >
+            ⚙️ Custom Habit
+          </button>
         </div>
       )}
 
-      {habitType === 'measurable' && (
-        <div className="form-row-2col anim-scale-in">
-          <div className="form-group">
-            <label className="form-label">Target Value</label>
-            <input
-              type="number"
-              min="1"
-              max="100000"
-              className="form-input"
-              value={measurableTarget}
-              onChange={(e) => setMeasurableTarget(e.target.value)}
-            />
+      {activeTab === 'presets' ? (
+        /* PRESET LIBRARY BROWSER */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxHeight: '60vh', overflowY: 'auto', paddingRight: '0.25rem' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            Choose a scientifically verified habit to populate configuration instantly:
           </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.75rem' }}>
+            {PRESET_LIBRARY.map((preset, idx) => {
+              const PIcon = ICON_MAP[preset.icon] || Sparkles;
+              return (
+                <div
+                  key={idx}
+                  onClick={() => applyPreset(preset)}
+                  className="card-hover"
+                  style={{
+                    padding: '0.85rem',
+                    borderRadius: 'var(--radius-md)',
+                    border: `1px solid var(--border-subtle)`,
+                    borderLeft: `4px solid ${preset.color}`,
+                    backgroundColor: 'var(--bg-card)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.4rem',
+                    transition: 'all 0.15s ease'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <div
+                        style={{
+                          width: '30px',
+                          height: '30px',
+                          borderRadius: 'var(--radius-sm)',
+                          backgroundColor: `${preset.color}15`,
+                          color: preset.color,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        <PIcon size={16} />
+                      </div>
+                      <span style={{ fontWeight: '800', fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+                        {preset.name}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+                    {preset.description}
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.2rem' }}>
+                    <span style={{ fontSize: '0.675rem', padding: '0.1rem 0.4rem', borderRadius: '4px', backgroundColor: `${preset.color}12`, color: preset.color, fontWeight: '700' }}>
+                      {preset.category}
+                    </span>
+                    <span style={{ fontSize: '0.675rem', padding: '0.1rem 0.4rem', borderRadius: '4px', backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                      {preset.habitType}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        /* CUSTOM FORM */
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', maxHeight: '70vh', overflowY: 'auto', paddingRight: '0.25rem' }}>
+          {/* Name & Live Badge */}
           <div className="form-group">
-            <label className="form-label">Unit of Measure</label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+              <label className="form-label" htmlFor="habit-name-input" style={{ margin: 0, fontWeight: '800' }}>
+                Habit / Action Name *
+              </label>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.2rem 0.65rem',
+                  borderRadius: '999px',
+                  backgroundColor: `${color}18`,
+                  color: color,
+                  border: `1px solid ${color}35`,
+                  fontSize: '0.775rem',
+                  fontWeight: '800'
+                }}
+              >
+                <PreviewIcon size={14} />
+                <span>{name.trim() || 'Preview'}</span>
+              </div>
+            </div>
             <input
+              id="habit-name-input"
               type="text"
               className="form-input"
-              placeholder="e.g. pages, steps, glasses"
-              value={measurableUnit}
-              onChange={(e) => setMeasurableUnit(e.target.value)}
+              placeholder="e.g. Walking, Deep Work Block, Drink 2L Water..."
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              autoFocus
             />
           </div>
-        </div>
+
+          {/* Tracking Mode: Yes/No, Measurable, Timer */}
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: '800' }}>Tracking Mode</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+              {[
+                { id: 'boolean', label: 'Yes / No Check', icon: Check, desc: 'Simple check-off' },
+                { id: 'measurable', label: 'Numeric Goal', icon: Target, desc: 'Count / Target' },
+                { id: 'timer', label: 'Focus Timer', icon: Play, desc: 'Timed minutes' }
+              ].map(t => {
+                const isSelected = habitType === t.id;
+                const TIcon = t.icon;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setHabitType(t.id)}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                      padding: '0.65rem 0.4rem',
+                      borderRadius: 'var(--radius-md)',
+                      border: isSelected ? `2px solid ${color}` : '1px solid var(--border-subtle)',
+                      backgroundColor: isSelected ? `${color}12` : 'var(--bg-surface)',
+                      color: isSelected ? color : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    <TIcon size={18} />
+                    <span style={{ fontSize: '0.8rem', fontWeight: '800' }}>{t.label}</span>
+                    <span style={{ fontSize: '0.65rem', opacity: 0.8 }}>{t.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Dynamic Details for Measurable / Timer Modes */}
+          {habitType === 'measurable' && (
+            <div style={{ backgroundColor: 'var(--bg-surface)', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.6rem' }}>
+                <div>
+                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Unit</label>
+                  <select
+                    className="form-input"
+                    value={measurableUnit}
+                    onChange={(e) => handleUnitChange(e.target.value)}
+                    style={{ fontSize: '0.8rem', padding: '0.4rem' }}
+                  >
+                    {MEASURABLE_UNITS.map(u => (
+                      <option key={u.id} value={u.id}>{u.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Daily Target</label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="form-input"
+                    value={measurableTarget}
+                    onChange={(e) => setMeasurableTarget(Number(e.target.value))}
+                    style={{ fontSize: '0.8rem', padding: '0.4rem' }}
+                  />
+                </div>
+                <div>
+                  <label className="form-label" style={{ fontSize: '0.75rem' }}>Quick Step (+/-)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="form-input"
+                    value={measurableStep}
+                    onChange={(e) => setMeasurableStep(Number(e.target.value))}
+                    style={{ fontSize: '0.8rem', padding: '0.4rem' }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {habitType === 'timer' && (
+            <div style={{ backgroundColor: 'var(--bg-surface)', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ flex: 1 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>Target Duration (Minutes)</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                  {[15, 25, 30, 45, 60, 90].map(mins => (
+                    <button
+                      key={mins}
+                      type="button"
+                      onClick={() => setTimerTargetMinutes(mins)}
+                      style={{
+                        padding: '0.3rem 0.6rem',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        border: timerTargetMinutes === mins ? `2px solid ${color}` : '1px solid var(--border-subtle)',
+                        backgroundColor: timerTargetMinutes === mins ? `${color}15` : 'var(--bg-card)',
+                        color: timerTargetMinutes === mins ? color : 'var(--text-secondary)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {mins}m
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ width: '80px' }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>Custom</label>
+                <input
+                  type="number"
+                  min="1"
+                  className="form-input"
+                  value={timerTargetMinutes}
+                  onChange={(e) => setTimerTargetMinutes(Number(e.target.value))}
+                  style={{ fontSize: '0.8rem', padding: '0.35rem' }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Time of Day */}
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: '800' }}>Time of Day</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem' }}>
+              {TIME_OF_DAY_OPTIONS.map(tod => {
+                const isSelected = timeOfDay === tod.id;
+                return (
+                  <button
+                    key={tod.id}
+                    type="button"
+                    onClick={() => setTimeOfDay(tod.id)}
+                    style={{
+                      padding: '0.5rem 0.25rem',
+                      borderRadius: 'var(--radius-md)',
+                      fontSize: '0.75rem',
+                      fontWeight: '800',
+                      textAlign: 'center',
+                      border: isSelected ? `2px solid ${color}` : '1px solid var(--border-subtle)',
+                      backgroundColor: isSelected ? `${color}15` : 'var(--bg-surface)',
+                      color: isSelected ? color : 'var(--text-secondary)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {tod.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Frequency Type */}
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: '800' }}>Repeat Frequency</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', marginBottom: '0.65rem' }}>
+              {FREQUENCY_TYPES.map(ft => {
+                const isSelected = frequencyType === ft.id;
+                return (
+                  <button
+                    key={ft.id}
+                    type="button"
+                    onClick={() => setFrequencyType(ft.id)}
+                    style={{
+                      padding: '0.5rem 0.65rem',
+                      borderRadius: 'var(--radius-md)',
+                      border: isSelected ? `2px solid ${color}` : '1px solid var(--border-subtle)',
+                      backgroundColor: isSelected ? `${color}12` : 'var(--bg-surface)',
+                      color: isSelected ? color : 'var(--text-secondary)',
+                      textAlign: 'left',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div style={{ fontSize: '0.775rem', fontWeight: '800' }}>{ft.label}</div>
+                    <div style={{ fontSize: '0.675rem', opacity: 0.8 }}>{ft.desc}</div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {frequencyType === 'specific_days' && (
+              <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'space-between' }}>
+                {ALL_DAYS.map(day => {
+                  const isDaySelected = targetDays.includes(day);
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      onClick={() => toggleDay(day)}
+                      style={{
+                        flex: 1,
+                        padding: '0.4rem 0',
+                        borderRadius: 'var(--radius-sm)',
+                        fontSize: '0.75rem',
+                        fontWeight: '800',
+                        border: isDaySelected ? `2px solid ${color}` : '1px solid var(--border-subtle)',
+                        backgroundColor: isDaySelected ? color : 'var(--bg-surface)',
+                        color: isDaySelected ? '#FFFFFF' : 'var(--text-secondary)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {day[0]}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Category, Icon & Color Selectors */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <div>
+              <label className="form-label" style={{ fontWeight: '800' }}>Category</label>
+              <select
+                className="form-input"
+                value={category}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+                style={{ fontSize: '0.85rem' }}
+              >
+                {HABIT_CATEGORIES.filter(c => c.id !== 'all').map(c => (
+                  <option key={c.id} value={c.id}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="form-label" style={{ fontWeight: '800' }}>Reminder Time</label>
+              <input
+                type="time"
+                className="form-input"
+                value={reminderTime}
+                onChange={(e) => setReminderTime(e.target.value)}
+                style={{ fontSize: '0.85rem' }}
+              />
+            </div>
+          </div>
+
+          {/* Icon Picker Strip */}
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: '800' }}>Habit Icon</label>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', maxHeight: '100px', overflowY: 'auto' }}>
+              {HABIT_ICONS.map(iName => {
+                const IComp = ICON_MAP[iName] || Sparkles;
+                const isSelected = icon === iName;
+                return (
+                  <button
+                    key={iName}
+                    type="button"
+                    onClick={() => setIcon(iName)}
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: isSelected ? `2px solid ${color}` : '1px solid var(--border-subtle)',
+                      backgroundColor: isSelected ? `${color}20` : 'var(--bg-surface)',
+                      color: isSelected ? color : 'var(--text-secondary)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <IComp size={18} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Color Palette */}
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: '800' }}>Accent Theme Color</label>
+            <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+              {HABIT_COLORS.map(c => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setColor(c.hex)}
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '999px',
+                    backgroundColor: c.hex,
+                    border: color === c.hex ? '3px solid var(--text-primary)' : '2px solid transparent',
+                    cursor: 'pointer'
+                  }}
+                  title={c.label}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Description & Motivation Note */}
+          <div className="form-group">
+            <label className="form-label" style={{ fontWeight: '800' }}>Why is this habit important? (Motivation Note)</label>
+            <textarea
+              className="form-input"
+              rows={2}
+              placeholder="e.g. Build unstoppable momentum and protect my long-term cognitive vitality."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ fontSize: '0.85rem' }}
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+            <Button variant="secondary" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit" style={{ backgroundColor: color, borderColor: color }}>
+              {initialData ? 'Save Changes' : 'Create Habit 🚀'}
+            </Button>
+          </div>
+        </form>
       )}
-
-      {/* Difficulty Rating */}
-      <div className="form-group">
-        <label className="form-label">Difficulty Level (Influences XP & Life Score)</label>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem' }}>
-          {[
-            { id: 'easy', label: 'Easy', xp: '+20 XP', color: '#10B981' },
-            { id: 'medium', label: 'Medium', xp: '+25 XP', color: '#3B82F6' },
-            { id: 'hard', label: 'Hard', xp: '+35 XP', color: '#F59E0B' },
-            { id: 'extreme', label: 'Extreme', xp: '+50 XP', color: '#EF4444' }
-          ].map(d => (
-            <button
-              key={d.id}
-              type="button"
-              onClick={() => setDifficulty(d.id)}
-              style={{
-                padding: '0.5rem 0.25rem',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: difficulty === d.id ? `${d.color}20` : 'var(--color-light-grey)',
-                border: difficulty === d.id ? `2px solid ${d.color}` : '1px solid var(--border-subtle)',
-                color: difficulty === d.id ? d.color : 'var(--color-black)',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}
-            >
-              <div style={{ fontSize: '0.8rem', fontWeight: '800' }}>{d.label}</div>
-              <div style={{ fontSize: '0.675rem', fontWeight: '700', opacity: 0.85 }}>{d.xp}</div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Category & Time of Day */}
-      <div className="form-row-2col">
-        <div className="form-group">
-          <label className="form-label">Category</label>
-          <select
-            className="form-select"
-            value={category}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-          >
-            {HABIT_CATEGORIES.filter(c => c.id !== 'all').map(cat => (
-              <option key={cat.id} value={cat.id}>
-                {cat.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">Time of Day</label>
-          <select
-            className="form-select"
-            value={timeOfDay}
-            onChange={(e) => setTimeOfDay(e.target.value)}
-          >
-            <option value="morning">Morning 🌅</option>
-            <option value="afternoon">Afternoon ☀️</option>
-            <option value="evening">Evening 🌙</option>
-            <option value="anytime">Anytime ⏱️</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Activity Color Picker Swatches */}
-      <div className="form-group">
-        <label className="form-label">Activity Color</label>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.5rem', marginTop: '0.25rem' }}>
-          {HABIT_COLORS.map(c => {
-            const isSelected = color.toLowerCase() === c.hex.toLowerCase();
-            return (
-              <button
-                type="button"
-                key={c.id}
-                onClick={() => setColor(c.hex)}
-                title={c.label}
-                style={{
-                  height: '38px',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: c.hex,
-                  border: isSelected ? '2.5px solid var(--color-black)' : '1px solid rgba(0,0,0,0.1)',
-                  boxShadow: isSelected ? `0 0 0 2px ${c.hex}80` : 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transform: isSelected ? 'scale(1.06)' : 'scale(1)',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                {isSelected && <Check size={16} color="#FFFFFF" strokeWidth={3} />}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Icon Picker */}
-      <div className="form-group">
-        <label className="form-label">Select Icon</label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.25rem' }}>
-          {HABIT_ICONS.map(iconKey => {
-            const IconComp = ICON_MAP[iconKey] || Sparkles;
-            const isSelected = icon === iconKey;
-
-            return (
-              <button
-                type="button"
-                key={iconKey}
-                onClick={() => setIcon(iconKey)}
-                style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: isSelected ? `${color}25` : 'var(--color-light-grey)',
-                  color: isSelected ? color : 'var(--color-text-grey)',
-                  border: `1.5px solid ${isSelected ? color : 'var(--border-subtle)'}`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all var(--transition-fast)'
-                }}
-              >
-                <IconComp size={18} />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Target Schedule Days */}
-      <div className="form-group">
-        <label className="form-label">Repeat Schedule</label>
-        <div className="day-selector-group">
-          {ALL_DAYS.map(day => (
-            <button
-              type="button"
-              key={day}
-              className={`day-chip ${targetDays.includes(day) ? 'active' : ''}`}
-              onClick={() => toggleDay(day)}
-            >
-              {day}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Reminder Time */}
-      <div className="form-group">
-        <label className="form-label">
-          <span>Reminder Time</span>
-          <span className="form-hint">Optional</span>
-        </label>
-        <div className="input-with-icon">
-          <Clock className="input-icon-left" size={16} />
-          <input
-            type="time"
-            className="form-input"
-            value={reminderTime}
-            onChange={(e) => setReminderTime(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Notes / Description */}
-      <div className="form-group">
-        <label className="form-label">Why does this habit matter?</label>
-        <textarea
-          className="form-textarea"
-          rows={2}
-          placeholder="e.g. Clears my mind and prepares me for deep work."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
-
-      {/* Actions */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
-        {onCancel && (
-          <Button variant="secondary" onClick={onCancel}>
-            Cancel
-          </Button>
-        )}
-        <Button variant="primary" type="submit" disabled={!name.trim()}>
-          {initialData ? 'Save Changes' : 'Create Habit'}
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 };

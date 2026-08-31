@@ -19,27 +19,42 @@ import {
   CheckSquare,
   PenTool,
   TrendingUp,
-  Award
+  Award,
+  Trophy,
+  Check,
+  Compass
 } from 'lucide-react';
 import { formatDateKey, formatDisplayDate, formatTime, getGreeting } from '../utils/dateUtils';
 import { Button } from '../components/common/Button';
 import { calculateHabitStreak } from '../utils/streakUtils';
 import { getHabitColor } from '../data/habitOptions';
 import { TimelineView } from '../components/dashboard/TimelineView';
+import { TickitHabitCard } from '../components/dashboard/TickitHabitCard';
+import { WeeklyStreakStrip } from '../components/dashboard/WeeklyStreakStrip';
+import { HabitExplorerModal } from '../components/habits/HabitExplorerModal';
+import { HabitCustomizerModal } from '../components/habits/HabitCustomizerModal';
+import { HabitStatisticsModal } from '../components/habits/HabitStatisticsModal';
+import { CHALLENGES_LIST, getStageForDay } from '../data/challengesData';
 
 export const MyDay = ({
   userProfile = {},
   habits = [],
   completions = {},
   tasks = [],
+  challengesProgress = {},
   morningRoutine = [],
   nightRoutine = [],
   routineLogs = {},
   wellnessLogs = {},
   lifeScore = {},
   onToggleHabit,
+  onIncrementHabit,
+  onLogHabitNote,
+  onAddHabit,
+  onUpdateHabit,
   onToggleTask,
   onToggleRoutine,
+  onToggleChallengeDay,
   onAddWater,
   onUpdateWellness,
   onOpenFocus,
@@ -48,7 +63,16 @@ export const MyDay = ({
   onNavigate
 }) => {
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'habits' | 'tasks' | 'timeline'
-  const todayKey = formatDateKey(new Date());
+  const [selectedTimeFilter, setSelectedTimeFilter] = useState('all');
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  // Modal states for the 100% screenshot features
+  const [isExplorerOpen, setIsExplorerOpen] = useState(false);
+  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState(null);
+  const [statsHabit, setStatsHabit] = useState(null);
+
+  const todayKey = formatDateKey(selectedDate || new Date());
   const currentDate = formatDisplayDate();
   const greeting = getGreeting();
   const userName = userProfile.name || 'Muthuselvam';
@@ -73,6 +97,14 @@ export const MyDay = ({
 
   const waterPercent = Math.min(100, Math.round(((todayWellness.waterMl || 0) / (todayWellness.waterTargetMl || 2000)) * 100));
 
+  // Active Challenge Info for Today
+  const enrolledChallengeIds = Object.keys(challengesProgress);
+  const activeChallenge = CHALLENGES_LIST.find(c => enrolledChallengeIds.includes(c.id));
+  const activeChallengeProgress = activeChallenge ? challengesProgress[activeChallenge.id] : null;
+  const challengeCompletedDays = activeChallengeProgress?.completedDays || [];
+  const challengeCurrentDayNum = Math.min(activeChallenge?.durationDays || 30, challengeCompletedDays.length + 1);
+  const isChallengeDayDone = challengeCompletedDays.includes(challengeCurrentDayNum);
+
   const MOOD_EMOJIS = {
     great: '😄',
     good: '🙂',
@@ -81,218 +113,144 @@ export const MyDay = ({
     bad: '😡'
   };
 
+  const filterHabitsByTime = (list) => {
+    if (selectedTimeFilter === 'all') return list;
+    return list.filter(h => (h.timeOfDay || 'anytime') === selectedTimeFilter);
+  };
+
+  const handleSaveCustomHabit = (data) => {
+    if (editingHabit) {
+      if (onUpdateHabit) onUpdateHabit(editingHabit.id, data);
+    } else {
+      if (onAddHabit) onAddHabit(data);
+    }
+  };
+
   return (
     <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingBottom: '3.5rem' }}>
-      {/* Header Banner */}
-      <div
-        className="card anim-scale-in"
-        style={{
-          background: 'linear-gradient(135deg, var(--bg-card) 0%, var(--bg-surface) 100%)',
-          border: '1px solid var(--border-subtle)',
-          padding: '1.75rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1.25rem'
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <span
+      {/* 1. WEEKLY CONNECTED STREAK BAR matching Screenshot 3 */}
+      <WeeklyStreakStrip
+        currentDate={new Date()}
+        selectedDate={selectedDate}
+        onSelectDate={d => setSelectedDate(d)}
+        onOpenNewHabit={() => setIsExplorerOpen(true)}
+        completions={completions}
+        habits={habits}
+      />
+
+      {/* ACTIVE 30-DAY CHALLENGE STRIP */}
+      {activeChallenge && (
+        <div
+          className="card anim-scale-in"
+          style={{
+            padding: '1.15rem 1.5rem',
+            borderLeft: `5px solid ${activeChallenge.color}`,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            background: `linear-gradient(90deg, ${activeChallenge.color}10 0%, var(--bg-card) 100%)`
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <span style={{ fontSize: '2rem' }}>{activeChallenge.coverEmoji}</span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.725rem', fontWeight: '800', textTransform: 'uppercase', color: activeChallenge.color }}>
+                  Active 30-Day Journey
+                </span>
+                <span style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--text-secondary)' }}>
+                  • Day {challengeCurrentDayNum} of {activeChallenge.durationDays}
+                </span>
+              </div>
+              <div style={{ fontSize: '1.05rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+                {activeChallenge.title}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              type="button"
+              onClick={() => onToggleChallengeDay && onToggleChallengeDay(activeChallenge.id, challengeCurrentDayNum)}
+              className={`btn btn-sm ${isChallengeDayDone ? 'btn-secondary' : 'btn-primary'}`}
               style={{
-                fontSize: '0.75rem',
-                fontWeight: '800',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                padding: '0.2rem 0.6rem',
-                borderRadius: '999px',
-                backgroundColor: 'var(--primary-blue-light)',
-                color: 'var(--primary-blue)'
+                backgroundColor: isChallengeDayDone ? undefined : activeChallenge.color,
+                borderColor: isChallengeDayDone ? undefined : activeChallenge.color,
+                fontWeight: '800'
               }}
             >
-              ⭐ Signature Daily Operating Hub
-            </span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
-              <Calendar size={13} style={{ display: 'inline', marginRight: '3px' }} /> {currentDate}
-            </span>
+              {isChallengeDayDone ? <><Check size={14} /> Day {challengeCurrentDayNum} Checked</> : `Check Day ${challengeCurrentDayNum} ✓`}
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigate('challenges')}
+              className="btn btn-ghost btn-sm"
+              style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-secondary)' }}
+            >
+              View Journey →
+            </button>
           </div>
-
-          <h1 style={{ fontSize: '1.9rem', fontWeight: '900', color: 'var(--text-primary)', margin: '0.2rem 0' }}>
-            {greeting}, {userName} 👋
-          </h1>
-          <p style={{ fontSize: '0.925rem', color: 'var(--text-secondary)', margin: 0 }}>
-            Your complete daily command center: Habits, tasks, biological vitals, and reflection in one place.
-          </p>
         </div>
+      )}
 
-        {/* Life Score & Overall Day Progress Pill */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <div
-            style={{
-              padding: '0.65rem 1.15rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border-subtle)',
-              boxShadow: 'var(--shadow-xs)',
-              textAlign: 'center'
-            }}
-          >
-            <div style={{ fontSize: '0.7rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              Day Progress
-            </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--primary-blue)' }}>
-              {habitCompletionRate}%
-            </div>
-          </div>
-
-          <div
-            style={{
-              padding: '0.65rem 1.15rem',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border-subtle)',
-              boxShadow: 'var(--shadow-xs)',
-              textAlign: 'center'
-            }}
-          >
-            <div style={{ fontSize: '0.7rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              Life Score
-            </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: '900', color: '#059669' }}>
-              {lifeScore.totalLifeScore ?? 87} / 100
-            </div>
-          </div>
-
-          <Button variant="primary" onClick={onOpenFocus} icon={Play}>
-            Focus Sprint
-          </Button>
-        </div>
-      </div>
-
-      {/* Quick Vitals Row (Water, Sleep, Mood, Energy, Journal) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem' }}>
-        {/* Water */}
-        <div className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: '0.725rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              💧 Hydration
-            </div>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0891B2', marginTop: '2px' }}>
-              {todayWellness.waterMl || 0}ml ({waterPercent}%)
-            </div>
-          </div>
+      {/* Sub-view navigation tabs & Time of day filter */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.4rem',
+            backgroundColor: 'var(--bg-card)',
+            padding: '0.35rem',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border-subtle)',
+            width: 'fit-content'
+          }}
+        >
           <button
             type="button"
-            onClick={() => onAddWater(250)}
-            className="btn btn-sm"
-            style={{ backgroundColor: '#0891B2', color: '#FFFFFF', fontWeight: '700', padding: '0.3rem 0.6rem' }}
+            onClick={() => setActiveTab('all')}
+            style={subTabStyle(activeTab === 'all')}
           >
-            +250ml
+            <Sparkles size={14} /> Daily Habits ({todayCompletedHabits.length}/{todayHabits.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('tasks')}
+            style={subTabStyle(activeTab === 'tasks')}
+          >
+            <Target size={14} /> Tasks ({completedTasksCount}/{todayTasks.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('timeline')}
+            style={subTabStyle(activeTab === 'timeline')}
+          >
+            <Clock size={14} /> 24h Timeline
           </button>
         </div>
 
-        {/* Mood & Energy */}
-        <div className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: '0.725rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              Mood & Energy
-            </div>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#D97706', marginTop: '2px' }}>
-              {MOOD_EMOJIS[todayWellness.mood] || '😄'} • ⚡ {todayWellness.energy || 9}/10
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => onNavigate('wellness')}
-            className="btn btn-ghost btn-sm"
-            style={{ fontSize: '0.75rem', fontWeight: '700' }}
-          >
-            Log →
-          </button>
+        {/* Time of Day Filter Bar */}
+        <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+          {[
+            { id: 'all', label: 'All Day' },
+            { id: 'morning', label: '🌅 Morning' },
+            { id: 'afternoon', label: '☀️ Afternoon' },
+            { id: 'evening', label: '🌙 Evening' },
+            { id: 'anytime', label: '⚡ Anytime' }
+          ].map(f => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setSelectedTimeFilter(f.id)}
+              className={`btn btn-sm ${selectedTimeFilter === f.id ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ fontSize: '0.75rem', fontWeight: '700', borderRadius: '999px', padding: '0.25rem 0.65rem' }}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
-
-        {/* Sleep */}
-        <div className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: '0.725rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              😴 Restorative Sleep
-            </div>
-            <div style={{ fontSize: '1.1rem', fontWeight: '800', color: '#6366F1', marginTop: '2px' }}>
-              {Math.floor((todayWellness.sleep?.durationMinutes || 465) / 60)}h {(todayWellness.sleep?.durationMinutes || 465) % 60}m ⭐⭐⭐⭐⭐
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => onNavigate('wellness')}
-            className="btn btn-ghost btn-sm"
-            style={{ fontSize: '0.75rem', fontWeight: '700' }}
-          >
-            Details →
-          </button>
-        </div>
-
-        {/* Daily Journal */}
-        <div className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: '0.725rem', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-              📔 Daily Journal
-            </div>
-            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
-              {todayWellness.journal?.wentWell ? 'Entry Logged ✓' : 'Prompt Ready'}
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => onNavigate('journal')}
-            className="btn btn-secondary btn-sm"
-            style={{ fontSize: '0.75rem', fontWeight: '700' }}
-          >
-            Reflect
-          </button>
-        </div>
-      </div>
-
-      {/* Sub-view navigation tabs */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.4rem',
-          backgroundColor: 'var(--bg-card)',
-          padding: '0.35rem',
-          borderRadius: 'var(--radius-md)',
-          border: '1px solid var(--border-subtle)',
-          width: 'fit-content'
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setActiveTab('all')}
-          style={subTabStyle(activeTab === 'all')}
-        >
-          <Sparkles size={14} /> Unified Day
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('habits')}
-          style={subTabStyle(activeTab === 'habits')}
-        >
-          <CheckSquare size={14} /> Habits ({todayCompletedHabits.length}/{todayHabits.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('tasks')}
-          style={subTabStyle(activeTab === 'tasks')}
-        >
-          <Target size={14} /> Tasks ({completedTasksCount}/{todayTasks.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('timeline')}
-          style={subTabStyle(activeTab === 'timeline')}
-        >
-          <Clock size={14} /> 24h Timeline
-        </button>
       </div>
 
       {/* 24h Timeline View Tab */}
@@ -308,95 +266,46 @@ export const MyDay = ({
         />
       )}
 
-      {/* Habits Tab / Unified View Habits Section */}
+      {/* 2. PILL-SHAPED HABIT CARDS matching Screenshot 3 */}
       {(activeTab === 'all' || activeTab === 'habits') && (
-        <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <CheckSquare size={18} color="var(--primary-blue)" /> Today's Core Habits & Rituals
-            </h3>
-            <Button variant="secondary" size="sm" onClick={onOpenNewHabit} icon={Plus}>
-              New Habit
-            </Button>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-            {todayHabits.map(habit => {
-              const isDone = !!completions[habit.id]?.[todayKey];
-              const { currentStreak } = calculateHabitStreak(habit, completions);
-              const habitColor = getHabitColor(habit);
-
-              return (
-                <div
-                  key={habit.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.75rem 1rem',
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: isDone ? 'var(--bg-surface)' : 'var(--bg-card)',
-                    border: '1px solid var(--border-subtle)',
-                    borderLeft: `4px solid ${habitColor}`,
-                    opacity: isDone ? 0.75 : 1,
-                    transition: 'all 0.15s'
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <button
-                      type="button"
-                      onClick={() => onToggleHabit(habit.id)}
-                      style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '6px',
-                        backgroundColor: isDone ? habitColor : 'transparent',
-                        border: `2px solid ${isDone ? habitColor : 'var(--border-medium)'}`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#FFFFFF',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {isDone && <CheckCircle2 size={14} />}
-                    </button>
-                    <div>
-                      <div style={{ fontSize: '0.9rem', fontWeight: '700', color: 'var(--text-primary)', textDecoration: isDone ? 'line-through' : 'none' }}>
-                        {habit.name}
-                      </div>
-                      <div style={{ fontSize: '0.725rem', color: 'var(--text-secondary)' }}>
-                        {habit.category} • {habit.timeOfDay} {habit.reminderTime ? `• ⏰ ${formatTime(habit.reminderTime)}` : ''}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#F97316' }}>
-                      🔥 {currentStreak}d
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onToggleHabit(habit.id)}
-                      className={`btn btn-sm ${isDone ? 'btn-secondary' : 'btn-primary'}`}
-                      style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
-                    >
-                      {isDone ? 'Done ✓' : 'Complete'}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          {filterHabitsByTime(todayHabits).length === 0 ? (
+            <div className="card" style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--text-secondary)' }}>
+              <Sparkles size={32} style={{ margin: '0 auto 0.75rem auto', color: 'var(--primary-blue)', opacity: 0.6 }} />
+              <div style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-primary)' }}>No habits scheduled for this period</div>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>Tap below to explore new lifestyles or customize a routine.</p>
+              <button
+                type="button"
+                onClick={() => setIsExplorerOpen(true)}
+                className="btn btn-primary"
+                style={{ marginTop: '1rem', fontWeight: '800' }}
+              >
+                <Compass size={16} /> Explore New Lifestyles
+              </button>
+            </div>
+          ) : (
+            filterHabitsByTime(todayHabits).map(habit => (
+              <TickitHabitCard
+                key={habit.id}
+                habit={habit}
+                completions={completions}
+                dateKey={todayKey}
+                onToggleCompletion={onToggleHabit}
+                onIncrement={onIncrementHabit}
+                onOpenDetails={(h) => setStatsHabit(h)}
+                onStartTimer={() => onOpenFocus()}
+              />
+            ))
+          )}
         </div>
       )}
 
       {/* Tasks Tab / Unified View Tasks Section */}
       {(activeTab === 'all' || activeTab === 'tasks') && (
-        <div className="card">
+        <div className="card" style={{ marginTop: '0.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Target size={18} color="var(--primary-blue)" /> Today's Action Items & Tasks
+              <Target size={18} color="var(--primary-blue)" /> Today's Action Items ({completedTasksCount}/{todayTasks.length})
             </h3>
             <Button variant="secondary" size="sm" onClick={onOpenNewTask} icon={Plus}>
               New Task
@@ -481,6 +390,46 @@ export const MyDay = ({
             )}
           </div>
         </div>
+      )}
+
+      {/* MODAL 1: EXPLORE NEW LIFESTYLE matching Screenshot 4 */}
+      {isExplorerOpen && (
+        <HabitExplorerModal
+          onSelectHabit={(h) => {
+            if (onAddHabit) onAddHabit(h);
+          }}
+          onOpenCustomizer={() => {
+            setEditingHabit(null);
+            setIsCustomizerOpen(true);
+          }}
+          onClose={() => setIsExplorerOpen(false)}
+        />
+      )}
+
+      {/* MODAL 2: 100% CUSTOMIZABLE HABIT EDITOR matching Screenshot 1 */}
+      {isCustomizerOpen && (
+        <HabitCustomizerModal
+          initialHabit={editingHabit}
+          onSave={handleSaveCustomHabit}
+          onClose={() => {
+            setIsCustomizerOpen(false);
+            setEditingHabit(null);
+          }}
+        />
+      )}
+
+      {/* MODAL 3: TRACK YOUR PROGRESS & STATISTICS matching Screenshot 2 */}
+      {statsHabit && (
+        <HabitStatisticsModal
+          habit={statsHabit}
+          completions={completions}
+          onClose={() => setStatsHabit(null)}
+          onOpenEdit={(h) => {
+            setEditingHabit(h);
+            setIsCustomizerOpen(true);
+            setStatsHabit(null);
+          }}
+        />
       )}
     </div>
   );

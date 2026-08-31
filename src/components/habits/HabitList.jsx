@@ -6,12 +6,16 @@ import { CheckSquare } from 'lucide-react';
 export const HabitList = ({
   habits = [],
   completions = {},
+  dateKey,
   onToggleCompletion,
+  onIncrement,
+  onLogNote,
   onOpenHabitDetails,
   onOpenNewHabit,
   onOpenEdit,
   onToggleArchive,
-  onDelete
+  onDelete,
+  onStartTimer
 }) => {
   if (habits.length === 0) {
     return (
@@ -32,11 +36,15 @@ export const HabitList = ({
           key={habit.id}
           habit={habit}
           completions={completions}
+          dateKey={dateKey}
           onToggleCompletion={onToggleCompletion}
+          onIncrement={onIncrement}
+          onLogNote={onLogNote}
           onOpenDetails={onOpenHabitDetails}
           onOpenEdit={onOpenEdit}
           onToggleArchive={onToggleArchive}
           onDelete={onDelete}
+          onStartTimer={onStartTimer}
         />
       ))}
     </div>

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Modal } from '../common/Modal';
-import { HabitForm } from './HabitForm';
+import React, { useState, useEffect } from 'react';
+import { HabitExplorerModal } from './HabitExplorerModal';
+import { HabitCustomizerModal } from './HabitCustomizerModal';
 
 export const HabitModal = ({
   isOpen,
@@ -8,22 +8,45 @@ export const HabitModal = ({
   onSave,
   initialData
 }) => {
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={initialData ? 'Edit Habit' : 'Create New Habit'}
-      subtitle={initialData ? 'Modify routine details and reminders.' : 'Set up a consistent daily routine.'}
-      maxWidth="540px"
-    >
-      <HabitForm
-        initialData={initialData}
-        onSave={(data) => {
-          onSave(data);
+  const [view, setView] = useState('explorer'); // 'explorer' | 'customizer'
+  const [selectedHabitData, setSelectedHabitData] = useState(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setSelectedHabitData(initialData);
+      setView('customizer');
+    } else {
+      setSelectedHabitData(null);
+      setView('explorer');
+    }
+  }, [initialData, isOpen]);
+
+  if (!isOpen) return null;
+
+  if (view === 'explorer' && !initialData) {
+    return (
+      <HabitExplorerModal
+        onSelectHabit={(preset) => {
+          onSave(preset);
           onClose();
         }}
-        onCancel={onClose}
+        onOpenCustomizer={() => {
+          setSelectedHabitData(null);
+          setView('customizer');
+        }}
+        onClose={onClose}
       />
-    </Modal>
+    );
+  }
+
+  return (
+    <HabitCustomizerModal
+      initialHabit={selectedHabitData || initialData}
+      onSave={(data) => {
+        onSave(data);
+        onClose();
+      }}
+      onClose={onClose}
+    />
   );
 };

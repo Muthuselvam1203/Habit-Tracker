@@ -24,6 +24,7 @@ import { Onboarding } from './pages/Onboarding';
 import { Dashboard } from './pages/Dashboard';
 import { MyDay } from './pages/MyDay';
 import { Habits } from './pages/Habits';
+import { Challenges } from './pages/Challenges';
 import { HabitDetails } from './pages/HabitDetails';
 import { Routines } from './pages/Routines';
 import { Goals } from './pages/Goals';
@@ -91,6 +92,12 @@ const AppContent = () => {
     wellnessLogs,
     badHabits,
     goals,
+    challengesProgress,
+    joinChallenge,
+    leaveChallenge,
+    toggleChallengeDay,
+    incrementHabitProgress,
+    logHabitDiaryNote,
     userXp,
     userLevel,
     streakFreezes,
@@ -199,6 +206,7 @@ const AppContent = () => {
     const p = location.pathname;
     if (p.startsWith('/my-day')) return 'my-day';
     if (p.startsWith('/habits')) return 'habits';
+    if (p.startsWith('/challenges')) return 'challenges';
     if (p.startsWith('/routines')) return 'routines';
     if (p.startsWith('/goals')) return 'goals';
     if (p.startsWith('/tasks')) return 'tasks';
@@ -292,19 +300,40 @@ const AppContent = () => {
               habits={habits}
               completions={completions}
               tasks={tasks}
+              challengesProgress={challengesProgress}
               morningRoutine={morningRoutine}
               nightRoutine={nightRoutine}
               routineLogs={routineLogs}
               wellnessLogs={wellnessLogs}
               lifeScore={lifeScore}
               onToggleHabit={toggleHabitCompletion}
+              onIncrementHabit={incrementHabitProgress}
+              onLogHabitNote={logHabitDiaryNote}
               onToggleTask={toggleTaskCompletion}
               onToggleRoutine={toggleRoutineStep}
+              onToggleChallengeDay={toggleChallengeDay}
               onAddWater={addWater}
               onUpdateWellness={updateDailyWellness}
               onOpenFocus={() => setIsFocusModalOpen(true)}
               onOpenNewHabit={handleOpenNewHabit}
               onOpenNewTask={() => navigate('/tasks')}
+              onNavigate={(path) => navigate(`/${path}`)}
+            />
+          }
+        />
+
+        {/* 🏆 30-Day Scientific Challenges & Journeys (Tickit Workflow) */}
+        <Route
+          path="/challenges"
+          element={
+            <Challenges
+              challengesProgress={challengesProgress}
+              habits={habits}
+              completions={completions}
+              onJoinChallenge={joinChallenge}
+              onLeaveChallenge={leaveChallenge}
+              onToggleChallengeDay={toggleChallengeDay}
+              onOpenHabitDetails={(habit) => navigate(`/habits/${habit.id}`)}
               onNavigate={(path) => navigate(`/${path}`)}
             />
           }
@@ -318,11 +347,14 @@ const AppContent = () => {
               habits={habits}
               completions={completions}
               onToggleCompletion={toggleHabitCompletion}
+              onIncrement={incrementHabitProgress}
+              onLogNote={logHabitDiaryNote}
               onOpenHabitDetails={(habit) => navigate(`/habits/${habit.id}`)}
               onOpenNewHabit={handleOpenNewHabit}
               onOpenEdit={handleOpenEditHabit}
               onToggleArchive={toggleArchiveHabit}
               onDelete={handleDeleteHabitRequest}
+              onStartTimer={() => setIsFocusModalOpen(true)}
             />
           }
         />

@@ -1,13 +1,14 @@
 export const HABIT_CATEGORIES = [
   { id: 'all', label: 'All Habits', icon: 'Sparkles' },
-  { id: 'health', label: 'Health', icon: 'HeartPulse', color: '#10B981' },
-  { id: 'fitness', label: 'Fitness', icon: 'Dumbbell', color: '#EF4444' },
-  { id: 'learning', label: 'Learning', icon: 'BookOpen', color: '#8B5CF6' },
-  { id: 'productivity', label: 'Productivity', icon: 'Target', color: '#F59E0B' },
-  { id: 'personal', label: 'Personal', icon: 'Smile', color: '#EC4899' },
-  { id: 'relationships', label: 'Relationships', icon: 'Users', color: '#F43F5E' },
-  { id: 'sleep', label: 'Sleep', icon: 'Moon', color: '#6366F1' },
-  { id: 'other', label: 'Other', icon: 'CheckSquare', color: '#2563EB' }
+  { id: 'health', label: 'Health & Wellness', icon: 'HeartPulse', color: '#10B981' },
+  { id: 'fitness', label: 'Fitness & Sports', icon: 'Dumbbell', color: '#EF4444' },
+  { id: 'learning', label: 'Learning & Growth', icon: 'BookOpen', color: '#8B5CF6' },
+  { id: 'productivity', label: 'Productivity & Work', icon: 'Target', color: '#F59E0B' },
+  { id: 'personal', label: 'Mindfulness & Soul', icon: 'Smile', color: '#EC4899' },
+  { id: 'relationships', label: 'Relationships & Family', icon: 'Users', color: '#F43F5E' },
+  { id: 'sleep', label: 'Sleep & Rest', icon: 'Moon', color: '#6366F1' },
+  { id: 'quit', label: 'Break Bad Habits', icon: 'ShieldCheck', color: '#DC2626' },
+  { id: 'other', label: 'Other Activities', icon: 'CheckSquare', color: '#2563EB' }
 ];
 
 export const CATEGORY_COLORS = {
@@ -18,6 +19,7 @@ export const CATEGORY_COLORS = {
   personal: '#EC4899',
   relationships: '#F43F5E',
   sleep: '#6366F1',
+  quit: '#DC2626',
   other: '#2563EB'
 };
 
@@ -36,108 +38,224 @@ export const HABIT_COLORS = [
   { id: 'fuchsia', label: 'Bright Fuchsia', hex: '#D946EF' }
 ];
 
-export const PRESET_ONBOARDING_HABITS = [
+export const MEASURABLE_UNITS = [
+  { id: 'ml', label: 'Milliliters (ml)', defaultTarget: 2000, defaultStep: 250 },
+  { id: 'glasses', label: 'Glasses', defaultTarget: 8, defaultStep: 1 },
+  { id: 'pages', label: 'Pages', defaultTarget: 20, defaultStep: 5 },
+  { id: 'chapters', label: 'Chapters', defaultTarget: 1, defaultStep: 1 },
+  { id: 'steps', label: 'Steps', defaultTarget: 8000, defaultStep: 1000 },
+  { id: 'km', label: 'Kilometers (km)', defaultTarget: 5, defaultStep: 1 },
+  { id: 'reps', label: 'Repetitions (reps)', defaultTarget: 50, defaultStep: 10 },
+  { id: 'pushups', label: 'Push-ups', defaultTarget: 30, defaultStep: 10 },
+  { id: 'minutes', label: 'Minutes', defaultTarget: 30, defaultStep: 5 },
+  { id: 'times', label: 'Times / Count', defaultTarget: 3, defaultStep: 1 }
+];
+
+export const FREQUENCY_TYPES = [
+  { id: 'daily', label: 'Every Day', desc: 'Repeat every single day' },
+  { id: 'specific_days', label: 'Specific Days', desc: 'Choose Mon, Tue, etc.' },
+  { id: 'weekly_target', label: 'Times per Week', desc: 'e.g. 3 times / week' },
+  { id: 'interval', label: 'Repeat Interval', desc: 'Every X days' }
+];
+
+export const TIME_OF_DAY_OPTIONS = [
+  { id: 'anytime', label: 'Any time', icon: 'Clock', desc: 'Throughout the day' },
+  { id: 'morning', label: 'Morning', icon: 'Sun', desc: '05:00 - 12:00' },
+  { id: 'afternoon', label: 'Afternoon', icon: 'Zap', desc: '12:00 - 18:00' },
+  { id: 'evening', label: 'Evening', icon: 'Moon', desc: '18:00 - 23:59' }
+];
+
+export const PRESET_LIBRARY = [
+  // Health
   {
-    id: 'meditation',
-    name: 'Practice meditation',
-    category: 'personal',
-    icon: 'Sparkles',
-    color: '#8B5CF6', // Purple
+    name: 'Drink 2,000ml Water',
+    category: 'health',
+    icon: 'Droplet',
+    color: '#06B6D4',
+    timeOfDay: 'anytime',
+    habitType: 'measurable',
+    measurableUnit: 'ml',
+    measurableTarget: 2000,
+    measurableStep: 250,
+    difficulty: 'easy',
+    reminderTime: '09:00',
+    description: 'Keep hydrated throughout the day for sustained metabolic and mental energy.'
+  },
+  {
+    name: 'Take daily vitamins & minerals',
+    category: 'health',
+    icon: 'HeartPulse',
+    color: '#10B981',
     timeOfDay: 'morning',
-    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    reminderTime: '07:00',
-    description: 'Calm the mind and cultivate peaceful awareness for 10 minutes.'
+    habitType: 'boolean',
+    difficulty: 'easy',
+    reminderTime: '08:30',
+    description: 'Essential micronutrients and omega-3s with morning meal.'
   },
   {
-    id: 'sleep-8h',
-    name: 'Sleep over 8h',
-    category: 'sleep',
-    icon: 'Moon',
-    color: '#6366F1', // Indigo
-    timeOfDay: 'evening',
-    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    reminderTime: '22:30',
-    description: 'Rest deeply to support cellular recovery, mood, and focus.'
-  },
-  {
-    id: 'walking',
-    name: 'Walking',
+    name: 'Outdoor Morning Walk',
     category: 'health',
     icon: 'Footprints',
-    color: '#10B981', // Emerald
+    color: '#10B981',
     timeOfDay: 'morning',
-    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    habitType: 'measurable',
+    measurableUnit: 'steps',
+    measurableTarget: 4000,
+    measurableStep: 500,
+    difficulty: 'easy',
     reminderTime: '07:30',
-    description: 'Take a brisk 20-minute walk in natural light.'
+    description: 'Brisk walk in natural morning sunlight to set biological clock.'
   },
+  // Fitness
   {
-    id: 'breathing',
-    name: 'Practice breathing',
-    category: 'personal',
-    icon: 'Wind',
-    color: '#06B6D4', // Sky Cyan
+    name: 'Strength & Gym Workout',
+    category: 'fitness',
+    icon: 'Dumbbell',
+    color: '#EF4444',
     timeOfDay: 'morning',
-    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    reminderTime: '08:00',
-    description: '5 minutes of box breathing to lower cortisol and center focus.'
+    habitType: 'timer',
+    timerTargetMinutes: 45,
+    difficulty: 'hard',
+    reminderTime: '07:00',
+    description: 'Progressive resistance training for bone density and muscle mass.'
   },
   {
-    id: 'brain-dump',
-    name: 'Brain dump',
+    name: 'Core & 50 Push-ups',
+    category: 'fitness',
+    icon: 'Flame',
+    color: '#EF4444',
+    timeOfDay: 'afternoon',
+    habitType: 'measurable',
+    measurableUnit: 'pushups',
+    measurableTarget: 50,
+    measurableStep: 10,
+    difficulty: 'medium',
+    reminderTime: '17:30',
+    description: 'Upper body and core strength maintenance.'
+  },
+  {
+    name: 'Full Body Mobility & Stretch',
+    category: 'fitness',
+    icon: 'Wind',
+    color: '#F97316',
+    timeOfDay: 'evening',
+    habitType: 'timer',
+    timerTargetMinutes: 15,
+    difficulty: 'easy',
+    reminderTime: '21:00',
+    description: 'Joint mobility, hip opening, and spinal decompression.'
+  },
+  // Productivity & Learning
+  {
+    name: 'Deep Work Block',
+    category: 'productivity',
+    icon: 'Target',
+    color: '#F59E0B',
+    timeOfDay: 'morning',
+    habitType: 'timer',
+    timerTargetMinutes: 60,
+    difficulty: 'hard',
+    reminderTime: '09:30',
+    description: 'Zero distraction, single-tasking flow session on highest priority project.'
+  },
+  {
+    name: 'Read 20 Pages',
+    category: 'learning',
+    icon: 'BookOpen',
+    color: '#3B82F6',
+    timeOfDay: 'evening',
+    habitType: 'measurable',
+    measurableUnit: 'pages',
+    measurableTarget: 20,
+    measurableStep: 5,
+    difficulty: 'easy',
+    reminderTime: '21:30',
+    description: 'Continuous non-fiction learning before sleep.'
+  },
+  {
+    name: 'Daily Priority Brain Dump',
     category: 'productivity',
     icon: 'Brain',
-    color: '#F59E0B', // Warm Amber
+    color: '#F59E0B',
     timeOfDay: 'morning',
-    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-    reminderTime: '09:00',
-    description: 'Clear mental clutter by writing down thoughts and priorities.'
+    habitType: 'boolean',
+    difficulty: 'easy',
+    reminderTime: '08:45',
+    description: 'Organize top 3 must-win outcomes for the day.'
+  },
+  // Mindfulness & Rest
+  {
+    name: 'Mindful Meditation',
+    category: 'personal',
+    icon: 'Sparkles',
+    color: '#8B5CF6',
+    timeOfDay: 'morning',
+    habitType: 'timer',
+    timerTargetMinutes: 15,
+    difficulty: 'medium',
+    reminderTime: '07:15',
+    description: 'Calm the mind, focus on breath sensations, center awareness.'
   },
   {
-    id: 'journal',
-    name: 'Keep a journal',
+    name: 'Evening Reflection Journal',
     category: 'personal',
     icon: 'PenTool',
-    color: '#EC4899', // Blush Pink
+    color: '#EC4899',
     timeOfDay: 'evening',
-    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    reminderTime: '21:30',
-    description: 'Reflect on wins, insights, and gratitude from the day.'
+    habitType: 'boolean',
+    difficulty: 'easy',
+    reminderTime: '22:00',
+    description: 'Record 3 wins, lessons learned, and gratitude.'
   },
   {
-    id: 'call-family',
-    name: 'Call family/friends',
-    category: 'relationships',
-    icon: 'PhoneCall',
-    color: '#F43F5E', // Coral Rose
+    name: 'Sleep 8 Hours',
+    category: 'sleep',
+    icon: 'Moon',
+    color: '#6366F1',
     timeOfDay: 'evening',
-    targetDays: ['Mon', 'Wed', 'Fri', 'Sun'],
-    reminderTime: '19:00',
-    description: 'Reach out to stay close with the people who matter most.'
+    habitType: 'timer',
+    timerTargetMinutes: 480,
+    difficulty: 'medium',
+    reminderTime: '22:30',
+    description: 'Protect 8 hours of restorative deep and REM sleep.'
+  },
+  // Bad Habits to Break
+  {
+    name: 'No Sugar / Junk Food',
+    category: 'quit',
+    icon: 'ShieldCheck',
+    color: '#DC2626',
+    timeOfDay: 'anytime',
+    habitType: 'boolean',
+    difficulty: 'hard',
+    reminderTime: '12:00',
+    description: 'Eliminate refined sugars and ultra-processed snacks.'
   },
   {
-    id: 'outdoors',
-    name: 'Enjoy outdoors',
-    category: 'health',
-    icon: 'Sun',
-    color: '#EAB308', // Sun Gold
-    timeOfDay: 'afternoon',
-    targetDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    reminderTime: '16:00',
-    description: 'Spend 15+ minutes in nature breathing fresh air.'
+    name: 'No Late-Night Screens',
+    category: 'quit',
+    icon: 'Moon',
+    color: '#6366F1',
+    timeOfDay: 'evening',
+    habitType: 'boolean',
+    difficulty: 'medium',
+    reminderTime: '22:00',
+    description: 'No social media or blue light within 1 hour of sleep.'
   }
 ];
+
+export const PRESET_ONBOARDING_HABITS = PRESET_LIBRARY.slice(0, 8);
+export const PRESET_HABITS = PRESET_LIBRARY;
 
 export const HABIT_ICONS = [
   'Sparkles', 'Moon', 'Footprints', 'Wind', 'Brain', 'PenTool',
   'PhoneCall', 'Sun', 'Dumbbell', 'BookOpen', 'Target', 'Droplet',
-  'HeartPulse', 'Users', 'Smile', 'Coffee', 'CheckSquare', 'Flame'
+  'HeartPulse', 'Users', 'Smile', 'Coffee', 'CheckSquare', 'Flame',
+  'ShieldCheck', 'Clock', 'Zap', 'Layers', 'Award'
 ];
-
-export const PRESET_HABITS = PRESET_ONBOARDING_HABITS;
 
 /**
  * Intelligent helper to resolve the distinct color of any habit/activity.
- * Checks explicit color -> keyword detection -> category default -> fallback palette.
  */
 export const getHabitColor = (habit) => {
   if (!habit) return '#2563EB';
@@ -171,14 +289,17 @@ export const getHabitColor = (habit) => {
   if (name.includes('sun') || name.includes('outdoor') || name.includes('nature') || name.includes('fresh air')) {
     return '#EAB308'; // Yellow / Sun
   }
-  if (name.includes('gym') || name.includes('workout') || name.includes('exercise') || name.includes('lift') || name.includes('fit')) {
+  if (name.includes('gym') || name.includes('workout') || name.includes('exercise') || name.includes('lift') || name.includes('fit') || name.includes('pushup')) {
     return '#EF4444'; // Crimson
   }
   if (name.includes('read') || name.includes('book') || name.includes('study') || name.includes('learn')) {
-    return '#8B5CF6'; // Purple
+    return '#3B82F6'; // Blue
   }
   if (name.includes('water') || name.includes('drink') || name.includes('hydrate')) {
     return '#06B6D4'; // Sky Cyan
+  }
+  if (name.includes('sugar') || name.includes('junk') || name.includes('quit') || name.includes('stop') || name.includes('detox')) {
+    return '#DC2626'; // Red
   }
 
   // Category fallback
@@ -199,4 +320,3 @@ export const getHabitColor = (habit) => {
 export const getCategoryColor = (categoryId) => {
   return CATEGORY_COLORS[categoryId] || '#2563EB';
 };
-

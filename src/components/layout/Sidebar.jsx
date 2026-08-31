@@ -14,7 +14,8 @@ import {
   Settings as SettingsIcon,
   Flame,
   Plus,
-  Sparkles
+  Sparkles,
+  Trophy
 } from 'lucide-react';
 
 export const Sidebar = ({
@@ -27,6 +28,7 @@ export const Sidebar = ({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'my-day', label: '⭐ My Day', icon: Sun },
     { id: 'habits', label: 'Habits', icon: CheckSquare },
+    { id: 'challenges', label: '30-Day Journeys', icon: Trophy },
     { id: 'routines', label: 'Routines', icon: Moon },
     { id: 'goals', label: 'Goals', icon: Target },
     { id: 'tasks', label: 'Tasks', icon: CheckSquare },
