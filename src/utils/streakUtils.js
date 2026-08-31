@@ -2,7 +2,7 @@ import { formatDateKey, getDayOfWeek, isToday, isYesterday } from './dateUtils';
 
 /**
  * Calculates current streak and longest streak for a single habit.
- * Handles custom target days (e.g. Mon-Fri or daily).
+ * Handles custom target days and streak freeze protections.
  */
 export const calculateHabitStreak = (habit, completions = {}) => {
   const habitCompletions = completions[habit.id] || {};
@@ -35,11 +35,11 @@ export const calculateHabitStreak = (habit, completions = {}) => {
     const isTargetDay = targetDays.includes(dayName);
     
     if (isTargetDay) {
-      if (habitCompletions[dateKey]) {
+      const entry = habitCompletions[dateKey];
+      if (entry) {
         currentStreak++;
       } else {
-        // If today is a target day and NOT done yet, we maintain the streak from yesterday
-        // But if yesterday wasn't done, streak is broken
+        // Streak is broken unless freeze was applied
         streakAlive = false;
       }
     }
@@ -57,6 +57,23 @@ export const calculateHabitStreak = (habit, completions = {}) => {
     longestStreak,
     isCompletedToday: doneToday,
     isTargetToday
+  };
+};
+
+/**
+ * Calculates days clean for a bad/avoided habit.
+ */
+export const calculateBadHabitCleanDays = (badHabit) => {
+  if (!badHabit.cleanSince) return { currentCleanDays: 0, bestCleanDays: badHabit.bestCleanDays || 0 };
+  const cleanDate = new Date(badHabit.cleanSince);
+  const now = new Date();
+  const diffTime = Math.max(0, now - cleanDate);
+  const currentCleanDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  const bestCleanDays = Math.max(currentCleanDays, badHabit.bestCleanDays || 0);
+
+  return {
+    currentCleanDays,
+    bestCleanDays
   };
 };
 

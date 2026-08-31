@@ -21,7 +21,8 @@ import {
   CheckSquare,
   Flame,
   Clock,
-  Check
+  Check,
+  Play
 } from 'lucide-react';
 
 const ICON_MAP = {
@@ -53,6 +54,11 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
   const [icon, setIcon] = useState(initialData?.icon || 'Sparkles');
   const [color, setColor] = useState(initialData?.color || getHabitColor(initialData) || '#10B981');
   const [timeOfDay, setTimeOfDay] = useState(initialData?.timeOfDay || 'morning');
+  const [habitType, setHabitType] = useState(initialData?.habitType || 'boolean');
+  const [timerTargetMinutes, setTimerTargetMinutes] = useState(initialData?.timerTargetMinutes || 30);
+  const [measurableUnit, setMeasurableUnit] = useState(initialData?.measurableUnit || 'pages');
+  const [measurableTarget, setMeasurableTarget] = useState(initialData?.measurableTarget || 20);
+  const [difficulty, setDifficulty] = useState(initialData?.difficulty || 'medium');
   const [targetDays, setTargetDays] = useState(initialData?.targetDays || ALL_DAYS);
   const [reminderTime, setReminderTime] = useState(initialData?.reminderTime || '08:00');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -69,7 +75,6 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
 
   const handleCategoryChange = (newCat) => {
     setCategory(newCat);
-    // If color hasn't been explicitly customized, suggest category color
     if (!initialData?.color) {
       const catObj = HABIT_CATEGORIES.find(c => c.id === newCat);
       if (catObj?.color) setColor(catObj.color);
@@ -86,6 +91,11 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
       icon,
       color,
       timeOfDay,
+      habitType,
+      timerTargetMinutes: Number(timerTargetMinutes) || 30,
+      measurableUnit,
+      measurableTarget: Number(measurableTarget) || 1,
+      difficulty,
       targetDays,
       reminderTime,
       description: description.trim()
@@ -100,7 +110,7 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
       <div className="form-group">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
           <label className="form-label" htmlFor="habit-name-input" style={{ margin: 0 }}>
-            <span>Activity / Habit Name *</span>
+            <span>Habit / Action Name *</span>
           </label>
           {/* Live Preview Badge */}
           <div
@@ -125,12 +135,114 @@ export const HabitForm = ({ initialData, onSave, onCancel }) => {
           id="habit-name-input"
           type="text"
           className="form-input"
-          placeholder="e.g. Walking, Sleep over 8h, Meditation, Read 20 pages..."
+          placeholder="e.g. Walking, Deep Work & Coding, Read 20 pages, Meditation..."
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           autoFocus
         />
+      </div>
+
+      {/* Habit Type Selector (Boolean / Timer / Measurable) */}
+      <div className="form-group">
+        <label className="form-label">Tracking Mode</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
+          {[
+            { id: 'boolean', label: '✓ Yes / No', desc: 'Standard check-in' },
+            { id: 'timer', label: '⏱️ Timed', desc: 'Target duration' },
+            { id: 'measurable', label: '🎯 Measurable', desc: 'Pages, glasses, etc' }
+          ].map(t => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setHabitType(t.id)}
+              style={{
+                padding: '0.65rem 0.5rem',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: habitType === t.id ? 'var(--primary-blue-light)' : 'var(--color-light-grey)',
+                border: habitType === t.id ? '2px solid var(--primary-blue)' : '1px solid var(--border-subtle)',
+                color: habitType === t.id ? 'var(--primary-blue)' : 'var(--color-black)',
+                cursor: 'pointer',
+                textAlign: 'center'
+              }}
+            >
+              <div style={{ fontSize: '0.85rem', fontWeight: '800' }}>{t.label}</div>
+              <div style={{ fontSize: '0.675rem', color: 'var(--color-text-grey)', marginTop: '2px' }}>{t.desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Conditional Inputs based on Habit Type */}
+      {habitType === 'timer' && (
+        <div className="form-group anim-scale-in">
+          <label className="form-label">Target Duration (Minutes)</label>
+          <input
+            type="number"
+            min="1"
+            max="720"
+            className="form-input"
+            value={timerTargetMinutes}
+            onChange={(e) => setTimerTargetMinutes(e.target.value)}
+          />
+        </div>
+      )}
+
+      {habitType === 'measurable' && (
+        <div className="form-row-2col anim-scale-in">
+          <div className="form-group">
+            <label className="form-label">Target Value</label>
+            <input
+              type="number"
+              min="1"
+              max="100000"
+              className="form-input"
+              value={measurableTarget}
+              onChange={(e) => setMeasurableTarget(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Unit of Measure</label>
+            <input
+              type="text"
+              className="form-input"
+              placeholder="e.g. pages, steps, glasses"
+              value={measurableUnit}
+              onChange={(e) => setMeasurableUnit(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Difficulty Rating */}
+      <div className="form-group">
+        <label className="form-label">Difficulty Level (Influences XP & Life Score)</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem' }}>
+          {[
+            { id: 'easy', label: 'Easy', xp: '+20 XP', color: '#10B981' },
+            { id: 'medium', label: 'Medium', xp: '+25 XP', color: '#3B82F6' },
+            { id: 'hard', label: 'Hard', xp: '+35 XP', color: '#F59E0B' },
+            { id: 'extreme', label: 'Extreme', xp: '+50 XP', color: '#EF4444' }
+          ].map(d => (
+            <button
+              key={d.id}
+              type="button"
+              onClick={() => setDifficulty(d.id)}
+              style={{
+                padding: '0.5rem 0.25rem',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: difficulty === d.id ? `${d.color}20` : 'var(--color-light-grey)',
+                border: difficulty === d.id ? `2px solid ${d.color}` : '1px solid var(--border-subtle)',
+                color: difficulty === d.id ? d.color : 'var(--color-black)',
+                cursor: 'pointer',
+                textAlign: 'center'
+              }}
+            >
+              <div style={{ fontSize: '0.8rem', fontWeight: '800' }}>{d.label}</div>
+              <div style={{ fontSize: '0.675rem', fontWeight: '700', opacity: 0.85 }}>{d.xp}</div>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Category & Time of Day */}

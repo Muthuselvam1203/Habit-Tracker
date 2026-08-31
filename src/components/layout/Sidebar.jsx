@@ -2,11 +2,14 @@ import React from 'react';
 import {
   LayoutDashboard,
   CheckSquare,
+  Sun,
+  Target,
+  Activity,
+  PenTool,
   Calendar as CalendarIcon,
   BarChart2,
   Award,
   Settings as SettingsIcon,
-  User,
   Flame,
   Plus,
   Zap
@@ -21,10 +24,13 @@ export const Sidebar = ({
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'habits', label: 'Habits', icon: CheckSquare },
-    { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
+    { id: 'routines', label: 'Routines', icon: Sun },
+    { id: 'goals', label: 'Goals', icon: Target },
+    { id: 'wellness', label: 'Wellness Hub', icon: Activity },
+    { id: 'journal', label: 'Daily Journal', icon: PenTool },
+    { id: 'calendar', label: 'Calendar & Heatmap', icon: CalendarIcon },
     { id: 'analytics', label: 'Analytics', icon: BarChart2 },
-    { id: 'achievements', label: 'Achievements', icon: Award },
-    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'achievements', label: 'XP & Badges', icon: Award },
     { id: 'settings', label: 'Settings', icon: SettingsIcon }
   ];
 
@@ -40,10 +46,11 @@ export const Sidebar = ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '1.5rem 1.15rem',
+        padding: '1.25rem 1rem',
         zIndex: 50,
         backgroundColor: 'var(--color-deep-navy)',
-        borderRight: '1px solid var(--color-secondary-navy)'
+        borderRight: '1px solid var(--color-secondary-navy)',
+        overflowY: 'auto'
       }}
     >
       <div>
@@ -56,38 +63,41 @@ export const Sidebar = ({
             gap: '0.75rem',
             cursor: 'pointer',
             padding: '0.25rem 0.5rem',
-            marginBottom: '1.75rem'
+            marginBottom: '1.25rem'
           }}
         >
-          {/* Logo Mark: Minimalist Streakly Emblem */}
           <div
             style={{
               width: '36px',
               height: '36px',
               borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--primary-blue)',
+              background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: 'var(--color-white)',
-              boxShadow: '0 4px 12px rgba(37, 99, 235, 0.4)'
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.45)'
             }}
           >
             <Zap size={20} fill="#FFFFFF" />
           </div>
 
           <div>
-            <span
+            <div
               style={{
                 fontFamily: 'var(--font-family)',
-                fontSize: '1.25rem',
+                fontSize: '1.15rem',
                 fontWeight: '900',
                 letterSpacing: '-0.03em',
-                color: 'var(--color-white)'
+                color: 'var(--color-white)',
+                lineHeight: 1.1
               }}
             >
-              STREAKLY
-            </span>
+              STREAKLY 2.0
+            </div>
+            <div style={{ fontSize: '0.675rem', color: '#60A5FA', fontWeight: '700', letterSpacing: '0.04em' }}>
+              LIFE OPERATING SYSTEM
+            </div>
           </div>
         </div>
 
@@ -97,19 +107,23 @@ export const Sidebar = ({
           className="btn btn-primary"
           style={{
             width: '100%',
-            marginBottom: '1.5rem',
-            padding: '0.7rem',
-            fontSize: '0.875rem',
+            marginBottom: '1.25rem',
+            padding: '0.65rem',
+            fontSize: '0.85rem',
             borderRadius: 'var(--radius-md)',
-            fontWeight: '700'
+            fontWeight: '700',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.4rem'
           }}
         >
-          <Plus size={18} />
+          <Plus size={16} />
           <span>Add Habit</span>
         </button>
 
         {/* Main Navigation Links */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPath === item.id;
@@ -121,18 +135,19 @@ export const Sidebar = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.65rem 0.85rem',
+                  gap: '0.7rem',
+                  padding: '0.55rem 0.75rem',
                   borderRadius: 'var(--radius-md)',
-                  backgroundColor: isActive ? 'rgba(37, 99, 235, 0.18)' : 'transparent',
+                  backgroundColor: isActive ? 'rgba(37, 99, 235, 0.2)' : 'transparent',
                   color: isActive ? '#60A5FA' : '#94A3B8',
-                  fontWeight: isActive ? '700' : '500',
-                  fontSize: '0.875rem',
+                  fontWeight: isActive ? '800' : '500',
+                  fontSize: '0.835rem',
                   transition: 'all var(--transition-fast)',
                   border: '1px solid',
-                  borderColor: isActive ? 'rgba(37, 99, 235, 0.35)' : 'transparent',
+                  borderColor: isActive ? 'rgba(37, 99, 235, 0.4)' : 'transparent',
                   textAlign: 'left',
-                  width: '100%'
+                  width: '100%',
+                  cursor: 'pointer'
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
@@ -147,7 +162,7 @@ export const Sidebar = ({
                   }
                 }}
               >
-                <Icon size={18} />
+                <Icon size={17} color={isActive ? '#60A5FA' : '#94A3B8'} />
                 <span>{item.label}</span>
               </button>
             );
@@ -158,7 +173,8 @@ export const Sidebar = ({
       {/* Bottom Best Streak Widget */}
       <div
         style={{
-          padding: '0.85rem 1rem',
+          marginTop: '1rem',
+          padding: '0.75rem 0.85rem',
           borderRadius: 'var(--radius-md)',
           backgroundColor: 'rgba(255, 255, 255, 0.04)',
           border: '1px solid rgba(255, 255, 255, 0.08)'
@@ -170,22 +186,22 @@ export const Sidebar = ({
               width: '32px',
               height: '32px',
               borderRadius: 'var(--radius-full)',
-              backgroundColor: 'rgba(37, 99, 235, 0.2)',
-              color: '#60A5FA',
+              backgroundColor: 'rgba(249, 115, 22, 0.2)',
+              color: '#F97316',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0
             }}
           >
-            <Flame size={17} />
+            <Flame size={17} fill="#F97316" />
           </div>
           <div>
-            <div style={{ fontSize: '0.725rem', color: '#94A3B8', fontWeight: '600', textTransform: 'uppercase' }}>
-              Current Best
+            <div style={{ fontSize: '0.675rem', color: '#94A3B8', fontWeight: '700', textTransform: 'uppercase' }}>
+              Unbroken Streak
             </div>
-            <div style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--color-white)', marginTop: '1px' }}>
-              {streakCount} {streakCount === 1 ? 'Day' : 'Days'} Streak
+            <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--color-white)', marginTop: '1px' }}>
+              {streakCount} {streakCount === 1 ? 'Day' : 'Days'} Active
             </div>
           </div>
         </div>

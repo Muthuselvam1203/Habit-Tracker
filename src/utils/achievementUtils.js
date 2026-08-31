@@ -1,6 +1,6 @@
 import { ACHIEVEMENTS_DATA } from '../data/achievements';
 import { calculateHabitStreak, calculateOverallStreaks } from './streakUtils';
-import { getPastDays, formatDateKey, getDayOfWeek } from './dateUtils';
+import { getPastDays } from './dateUtils';
 
 export const evaluateAchievements = (habits = [], completions = {}, currentUnlocked = []) => {
   const overall = calculateOverallStreaks(habits, completions);
@@ -12,24 +12,6 @@ export const evaluateAchievements = (habits = [], completions = {}, currentUnloc
     const { longestStreak, currentStreak } = calculateHabitStreak(h, completions);
     if (longestStreak > maxStreak) maxStreak = longestStreak;
     if (currentStreak > maxStreak) maxStreak = currentStreak;
-  });
-
-  // Calculate consecutive perfect days (for Perfect Week)
-  const past7Days = getPastDays(7);
-  let perfectDaysCount = 0;
-  past7Days.forEach(day => {
-    let due = 0;
-    let done = 0;
-    activeHabits.forEach(h => {
-      const targetDays = h.targetDays || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      if (targetDays.includes(day.dayName)) {
-        due++;
-        if (completions[h.id]?.[day.dateKey]) done++;
-      }
-    });
-    if (due > 0 && done >= due) {
-      perfectDaysCount++;
-    }
   });
 
   // Evaluate each achievement
@@ -68,28 +50,27 @@ export const evaluateAchievements = (habits = [], completions = {}, currentUnloc
         unlocked = currentVal >= 30;
         break;
 
-      case 'consistency-king':
-        threshold = 50;
-        currentVal = Math.max(overall.totalCompletions, maxStreak);
-        unlocked = maxStreak >= 60 || overall.totalCompletions >= 50;
+      case 'hundred-completions':
+        currentVal = overall.totalCompletions;
+        threshold = 100;
+        unlocked = currentVal >= 100;
+        break;
+
+      case 'early-bird':
+      case 'hydration-hero':
+      case 'mindful-person':
+      case 'reading-master':
+      case 'focus-master':
+      case 'bad-habit-crusher':
+      case 'life-optimizer':
+        currentVal = currentUnlocked.includes(achievement.id) ? threshold : Math.max(1, threshold - 1);
+        unlocked = currentUnlocked.includes(achievement.id);
         break;
 
       case 'legend-100':
         currentVal = maxStreak;
         threshold = 100;
         unlocked = currentVal >= 100;
-        break;
-
-      case 'habit-master':
-        currentVal = activeHabits.length;
-        threshold = 5;
-        unlocked = currentVal >= 5;
-        break;
-
-      case 'perfect-week':
-        currentVal = perfectDaysCount;
-        threshold = 7;
-        unlocked = currentVal >= 7;
         break;
 
       default:

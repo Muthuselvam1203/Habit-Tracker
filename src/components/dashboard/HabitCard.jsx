@@ -22,10 +22,14 @@ import {
   Users,
   Smile,
   Coffee,
-  CheckSquare
+  CheckSquare,
+  Clock,
+  Play,
+  Layers
 } from 'lucide-react';
 import { calculateHabitStreak } from '../../utils/streakUtils';
 import { getHabitColor } from '../../data/habitOptions';
+import { formatTime } from '../../utils/dateUtils';
 
 const ICON_MAP = {
   Sparkles,
@@ -45,7 +49,9 @@ const ICON_MAP = {
   Smile,
   Coffee,
   CheckSquare,
-  Flame
+  Flame,
+  Clock,
+  Layers
 };
 
 export const HabitCard = ({
@@ -55,17 +61,25 @@ export const HabitCard = ({
   onOpenDetails,
   onOpenEdit,
   onToggleArchive,
-  onDelete
+  onDelete,
+  onStartTimer
 }) => {
   const { currentStreak, isCompletedToday } = calculateHabitStreak(habit, completions);
   const IconComp = ICON_MAP[habit.icon] || Sparkles;
   const targetDays = habit.targetDays || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const frequencyLabel = targetDays.length === 7 ? 'Daily' : `${targetDays.length} days/wk`;
+  const frequencyLabel = targetDays.length === 7 ? 'Daily' : `${targetDays.length}d/wk`;
   const habitColor = getHabitColor(habit);
+
+  const difficultyColors = {
+    easy: '#10B981',
+    medium: '#3B82F6',
+    hard: '#F59E0B',
+    extreme: '#EF4444'
+  };
 
   return (
     <div
-      className={`habit-card-item ${isCompletedToday ? 'is-completed' : ''}`}
+      className={`habit-card-item anim-scale-in ${isCompletedToday ? 'is-completed' : ''}`}
       style={{
         borderLeft: `4px solid ${habitColor}`
       }}
@@ -98,15 +112,33 @@ export const HabitCard = ({
         </div>
 
         <div className="habit-details-box">
-          <div
-            className="habit-name"
-            onClick={() => onOpenDetails(habit)}
-            title="Click to view details"
-          >
-            {habit.name}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <div
+              className="habit-name"
+              onClick={() => onOpenDetails(habit)}
+              title="Click to view details"
+            >
+              {habit.name}
+            </div>
+
+            {habit.difficulty && (
+              <span
+                style={{
+                  fontSize: '0.65rem',
+                  fontWeight: '800',
+                  textTransform: 'uppercase',
+                  padding: '0.1rem 0.35rem',
+                  borderRadius: '4px',
+                  backgroundColor: `${difficultyColors[habit.difficulty] || '#3B82F6'}15`,
+                  color: difficultyColors[habit.difficulty] || '#3B82F6'
+                }}
+              >
+                {habit.difficulty}
+              </span>
+            )}
           </div>
 
-          <div className="habit-meta-row">
+          <div className="habit-meta-row" style={{ marginTop: '0.2rem' }}>
             <span
               className="habit-category-tag"
               style={{
@@ -118,15 +150,60 @@ export const HabitCard = ({
               {habit.category || 'health'}
             </span>
             <span className="habit-schedule-tag">• {frequencyLabel}</span>
-            {habit.timeOfDay && (
-              <span className="habit-schedule-tag">• {habit.timeOfDay}</span>
+            {habit.reminderTime && (
+              <span className="habit-schedule-tag">• ⏰ {formatTime(habit.reminderTime)}</span>
+            )}
+            {habit.habitType === 'timer' && (
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: '700',
+                  color: '#6366F1',
+                  backgroundColor: '#EEF2FF',
+                  padding: '0.1rem 0.4rem',
+                  borderRadius: '4px'
+                }}
+              >
+                ⏱️ {habit.timerTargetMinutes || 30}m
+              </span>
+            )}
+            {habit.habitType === 'measurable' && (
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontWeight: '700',
+                  color: '#0891B2',
+                  backgroundColor: '#ECFEFF',
+                  padding: '0.1rem 0.4rem',
+                  borderRadius: '4px'
+                }}
+              >
+                🎯 {habit.measurableTarget} {habit.measurableUnit}
+              </span>
             )}
           </div>
         </div>
       </div>
 
-      {/* Right Area: Streak Pill & Action Buttons */}
+      {/* Right Area: Action Buttons & Streak */}
       <div className="habit-card-right">
+        {habit.habitType === 'timer' && onStartTimer && (
+          <button
+            type="button"
+            onClick={() => onStartTimer(habit)}
+            className="btn btn-secondary btn-sm"
+            style={{
+              padding: '0.25rem 0.5rem',
+              fontSize: '0.725rem',
+              fontWeight: '700',
+              color: habitColor
+            }}
+            title="Start timer for this habit"
+          >
+            <Play size={12} /> Start
+          </button>
+        )}
+
         <div
           className="habit-streak-pill"
           style={{
@@ -177,4 +254,3 @@ export const HabitCard = ({
     </div>
   );
 };
-

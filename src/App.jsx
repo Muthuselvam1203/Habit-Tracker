@@ -23,6 +23,10 @@ import { Onboarding } from './pages/Onboarding';
 import { Dashboard } from './pages/Dashboard';
 import { Habits } from './pages/Habits';
 import { HabitDetails } from './pages/HabitDetails';
+import { Routines } from './pages/Routines';
+import { Goals } from './pages/Goals';
+import { Wellness } from './pages/Wellness';
+import { DailyJournal } from './pages/DailyJournal';
 import { Calendar } from './pages/Calendar';
 import { Analytics } from './pages/Analytics';
 import { Achievements } from './pages/Achievements';
@@ -72,6 +76,16 @@ const AppContent = () => {
     habits,
     completions,
     stats,
+    morningRoutine,
+    nightRoutine,
+    routineLogs,
+    wellnessLogs,
+    badHabits,
+    goals,
+    userXp,
+    userLevel,
+    streakFreezes,
+    lifeScore,
     unlockedAchievements,
     newAchievementAlert,
     setNewAchievementAlert,
@@ -84,6 +98,19 @@ const AppContent = () => {
     deleteHabit,
     toggleArchiveHabit,
     toggleHabitCompletion,
+    toggleRoutineStep,
+    setMorningRoutine,
+    setNightRoutine,
+    updateDailyWellness,
+    addWater,
+    addGoal,
+    updateGoal,
+    deleteGoal,
+    addBadHabit,
+    resetBadHabit,
+    deleteBadHabit,
+    useStreakFreeze,
+    logFocusSession,
     seedDemoData,
     clearHabits
   } = useHabits();
@@ -108,12 +135,11 @@ const AppContent = () => {
   const handleLogin = (user) => {
     setIsAuthenticated(true);
     localStorage.setItem('streakly_authenticated', 'true');
-    if (user?.name) updateProfile({ name: user.name });
-    if (isOnboardingCompleted) {
-      navigate('/dashboard');
-    } else {
-      navigate('/onboarding');
+    if (user?.name) updateProfile({ name: user.name, avatar: user.avatar || '⚡' });
+    if (user?.isGuest) {
+      seedDemoData();
     }
+    navigate('/dashboard');
   };
 
   // Modal open handlers
@@ -153,6 +179,10 @@ const AppContent = () => {
   const getCurrentNavPath = () => {
     const p = location.pathname;
     if (p.startsWith('/habits')) return 'habits';
+    if (p.startsWith('/routines')) return 'routines';
+    if (p.startsWith('/goals')) return 'goals';
+    if (p.startsWith('/wellness')) return 'wellness';
+    if (p.startsWith('/journal')) return 'journal';
     if (p.startsWith('/calendar')) return 'calendar';
     if (p.startsWith('/analytics')) return 'analytics';
     if (p.startsWith('/achievements')) return 'achievements';
@@ -171,7 +201,7 @@ const AppContent = () => {
   }
 
   // 2. Authenticated but has not completed onboarding
-  if (!isOnboardingCompleted) {
+  if (!isOnboardingCompleted && false) {
     return (
       <Routes>
         <Route
@@ -206,6 +236,8 @@ const AppContent = () => {
     >
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        
+        {/* Smart Daily Life Dashboard */}
         <Route
           path="/dashboard"
           element={
@@ -214,16 +246,33 @@ const AppContent = () => {
               habits={habits}
               completions={completions}
               stats={stats}
+              morningRoutine={morningRoutine}
+              nightRoutine={nightRoutine}
+              routineLogs={routineLogs}
+              wellnessLogs={wellnessLogs}
+              badHabits={badHabits}
+              goals={goals}
+              lifeScore={lifeScore}
+              streakFreezes={streakFreezes}
               onToggleCompletion={toggleHabitCompletion}
+              onToggleRoutineStep={toggleRoutineStep}
               onOpenHabitDetails={(habit) => navigate(`/habits/${habit.id}`)}
               onOpenNewHabit={handleOpenNewHabit}
               onOpenEdit={handleOpenEditHabit}
               onToggleArchive={toggleArchiveHabit}
               onDelete={handleDeleteHabitRequest}
               onAddHabit={addHabit}
+              onAddWater={addWater}
+              onUpdateWellness={updateDailyWellness}
+              onResetBadHabit={resetBadHabit}
+              onUseStreakFreeze={useStreakFreeze}
+              onLogFocus={logFocusSession}
+              onNavigate={(path) => navigate(`/${path}`)}
             />
           }
         />
+
+        {/* Habits Route */}
         <Route
           path="/habits"
           element={
@@ -239,6 +288,8 @@ const AppContent = () => {
             />
           }
         />
+
+        {/* Habit Details Route */}
         <Route
           path="/habits/:id"
           element={
@@ -252,6 +303,64 @@ const AppContent = () => {
             />
           }
         />
+
+        {/* Morning & Night Routine System */}
+        <Route
+          path="/routines"
+          element={
+            <Routines
+              morningRoutine={morningRoutine}
+              nightRoutine={nightRoutine}
+              routineLogs={routineLogs}
+              onToggleRoutineStep={toggleRoutineStep}
+              onSetMorningRoutine={setMorningRoutine}
+              onSetNightRoutine={setNightRoutine}
+            />
+          }
+        />
+
+        {/* Goals -> Habits Architecture */}
+        <Route
+          path="/goals"
+          element={
+            <Goals
+              goals={goals}
+              habits={habits}
+              completions={completions}
+              onAddGoal={addGoal}
+              onUpdateGoal={updateGoal}
+              onDeleteGoal={deleteGoal}
+              onOpenHabitDetails={(habit) => navigate(`/habits/${habit.id}`)}
+            />
+          }
+        />
+
+        {/* Wellness Hub (Water, Sleep, Mood, Energy, Screen Time) */}
+        <Route
+          path="/wellness"
+          element={
+            <Wellness
+              wellnessLogs={wellnessLogs}
+              habits={habits}
+              completions={completions}
+              onAddWater={addWater}
+              onUpdateWellness={updateDailyWellness}
+            />
+          }
+        />
+
+        {/* Daily Reflection & Wins Journal */}
+        <Route
+          path="/journal"
+          element={
+            <DailyJournal
+              wellnessLogs={wellnessLogs}
+              onUpdateWellness={updateDailyWellness}
+            />
+          }
+        />
+
+        {/* Calendar & GitHub-Style Heatmap */}
         <Route
           path="/calendar"
           element={
@@ -262,6 +371,8 @@ const AppContent = () => {
             />
           }
         />
+
+        {/* Advanced Behavioral Analytics */}
         <Route
           path="/analytics"
           element={
@@ -269,9 +380,12 @@ const AppContent = () => {
               habits={habits}
               completions={completions}
               stats={stats}
+              wellnessLogs={wellnessLogs}
             />
           }
         />
+
+        {/* Gamification, XP & Badges */}
         <Route
           path="/achievements"
           element={
@@ -279,9 +393,13 @@ const AppContent = () => {
               habits={habits}
               completions={completions}
               unlockedAchievements={unlockedAchievements}
+              userLevel={userLevel}
+              streakFreezes={streakFreezes}
             />
           }
         />
+
+        {/* Profile */}
         <Route
           path="/profile"
           element={
@@ -293,6 +411,8 @@ const AppContent = () => {
             />
           }
         />
+
+        {/* Settings */}
         <Route
           path="/settings"
           element={
@@ -301,11 +421,12 @@ const AppContent = () => {
               onClearData={clearHabits}
               onResetOnboarding={() => {
                 resetOnboarding();
-                navigate('/onboarding');
+                navigate('/dashboard');
               }}
             />
           }
         />
+
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
 

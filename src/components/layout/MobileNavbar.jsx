@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, CheckSquare, Calendar as CalendarIcon, BarChart2, User } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, Sun, Activity, BarChart2 } from 'lucide-react';
 
 export const MobileNavbar = ({
   currentPath = 'dashboard',
@@ -8,9 +8,9 @@ export const MobileNavbar = ({
   const navItems = [
     { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
     { id: 'habits', label: 'Habits', icon: CheckSquare },
-    { id: 'calendar', label: 'Calendar', icon: CalendarIcon },
-    { id: 'analytics', label: 'Analytics', icon: BarChart2 },
-    { id: 'profile', label: 'Profile', icon: User }
+    { id: 'routines', label: 'Routines', icon: Sun },
+    { id: 'wellness', label: 'Wellness', icon: Activity },
+    { id: 'analytics', label: 'Analytics', icon: BarChart2 }
   ];
 
   return (
@@ -26,7 +26,7 @@ export const MobileNavbar = ({
             className={`mobile-nav-item ${isActive ? 'active' : ''}`}
             aria-current={isActive ? 'page' : undefined}
           >
-            <Icon size={20} />
+            <Icon size={19} />
             <span>{item.label}</span>
           </button>
         );
