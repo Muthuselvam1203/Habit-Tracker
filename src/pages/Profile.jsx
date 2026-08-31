@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { User, Flame, Clock, Award, CheckCircle2, Trophy, Percent, Check, Calendar } from 'lucide-react';
+import { User, Flame, Clock, Award, CheckCircle2, Trophy, Percent, Check, Calendar, LogOut } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { formatTime, formatDisplayDate } from '../utils/dateUtils';
 
 export const Profile = ({
   userProfile = {},
   onUpdateProfile,
+  onLogout,
   stats = {},
   unlockedCount = 0
 }) => {
@@ -31,13 +32,21 @@ export const Profile = ({
 
   return (
     <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: '800px', paddingBottom: '2.5rem' }}>
-      <div>
-        <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--color-black)' }}>
-          Personal Profile
-        </h2>
-        <p style={{ color: 'var(--color-text-grey)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
-          Manage your identity, circadian routine schedule, and consistency statistics.
-        </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--text-primary)' }}>
+            Personal Profile
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.2rem' }}>
+            Manage your identity, circadian routine schedule, and consistency statistics.
+          </p>
+        </div>
+
+        {onLogout && (
+          <Button variant="secondary" onClick={onLogout} icon={LogOut}>
+            Sign Out
+          </Button>
+        )}
       </div>
 
       {/* Profile Overview Banner */}
@@ -47,7 +56,7 @@ export const Profile = ({
           display: 'flex',
           alignItems: 'center',
           gap: '1.5rem',
-          backgroundColor: 'var(--color-white)'
+          backgroundColor: 'var(--bg-card)'
         }}
       >
         <div
@@ -55,14 +64,14 @@ export const Profile = ({
             width: '68px',
             height: '68px',
             borderRadius: 'var(--radius-full)',
-            backgroundColor: 'var(--color-deep-navy)',
-            color: 'var(--color-white)',
+            backgroundColor: 'var(--primary-blue)',
+            color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: '1.65rem',
             fontWeight: '800',
-            boxShadow: '0 4px 14px rgba(7, 17, 31, 0.25)',
+            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
             flexShrink: 0
           }}
         >
@@ -70,8 +79,8 @@ export const Profile = ({
         </div>
 
         <div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--color-black)' }}>{name}</h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--color-text-grey)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-primary)' }}>{name}</h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             <Calendar size={13} /> Member since {memberSinceFormatted}
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.65rem', flexWrap: 'wrap' }}>
@@ -87,29 +96,29 @@ export const Profile = ({
 
       {/* 4 Summary Stats */}
       <div className="profile-stats-grid">
-        <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--color-text-grey)', textTransform: 'uppercase' }}>Current Streak</div>
-          <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--color-black)', marginTop: '0.2rem' }}>
+        <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Current Streak</div>
+          <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--text-primary)', marginTop: '0.2rem' }}>
             {stats.currentStreak || 0}d
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--color-text-grey)', textTransform: 'uppercase' }}>Longest Streak</div>
-          <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--color-black)', marginTop: '0.2rem' }}>
+        <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Longest Streak</div>
+          <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--text-primary)', marginTop: '0.2rem' }}>
             {stats.bestStreak || 0}d
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--color-text-grey)', textTransform: 'uppercase' }}>Active Habits</div>
-          <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--color-blue)', marginTop: '0.2rem' }}>
+        <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Active Habits</div>
+          <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--primary-blue)', marginTop: '0.2rem' }}>
             {stats.totalActive || 0}
           </div>
         </div>
 
-        <div style={{ backgroundColor: 'var(--color-white)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--color-text-grey)', textTransform: 'uppercase' }}>Total Check-ins</div>
+        <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '1rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.725rem', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>Total Check-ins</div>
           <div style={{ fontSize: '1.35rem', fontWeight: '800', color: 'var(--status-success-text)', marginTop: '0.2rem' }}>
             {stats.totalCompletions || 0}
           </div>
@@ -118,7 +127,7 @@ export const Profile = ({
 
       {/* Edit Profile Form */}
       <div className="card">
-        <h4 className="card-title" style={{ marginBottom: '1.25rem' }}>
+        <h4 className="card-title" style={{ marginBottom: '1.25rem', color: 'var(--text-primary)' }}>
           <User size={18} color="var(--primary-blue)" /> Account & Routine Settings
         </h4>
 

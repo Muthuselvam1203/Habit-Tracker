@@ -155,6 +155,12 @@ const AppContent = () => {
     navigate('/dashboard');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('streakly_authenticated');
+    setIsAuthenticated(false);
+    navigate('/');
+  };
+
   // Modal open handlers
   const handleOpenEditHabit = (habit) => {
     setEditingHabit(habit);
@@ -464,6 +470,7 @@ const AppContent = () => {
             <Profile
               userProfile={userProfile}
               onUpdateProfile={updateProfile}
+              onLogout={handleLogout}
               stats={stats}
               unlockedCount={unlockedAchievements.length}
             />
